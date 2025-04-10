@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+.wrapper{
+    font-family: 'Quicksand', sans-serif;
+    height: auto;
+    margin-top: 80px;
+    max-width: 430px;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+    padding: 34px;
+    border-radius: 20px;
+    border: 1px solid rgba(14, 236, 232, 0.3);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+  color: #E6E6E6;
+  transition: all 0.3s ease-in-out;
+    margin-bottom: 80px;
+
+  }
+  .wrapper h2{
+    position: relative;
+    font-size: 1.7em;
+    font-weight: 600;
+    color: #ff4d00;
+    text-align: center;
+  }
+  .wrapper h2::before{
+    content: '';
+    position: absolute;
+    left: 52px;
+    bottom: 0;
+    height: 3px;
+    width: 28px;
+    border-radius: 12px;
+    background: rgba(113, 43, 13, 1);
+  }
+  .wrapper form{
+    margin-top: 30px;
+  }
+  .wrapper form .input-box{
+    height: 46px;
+    margin: 18px 0;
+  }
+  form .input-box input{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    padding: 0 15px;
+    font-size: 1em;
+    font-weight: 400;
+    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    transition: 0.2s ease;
+  }
+  .input-box input:focus,
+  .input-box input:valid{
+    outline: none;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #ff2600;
+  box-shadow: 0 0 6px #ff110088;
+  }
+  form .input-box input::placeholder{
+    color: #aaa;
+  }
+  form .policy{
+    display: flex;
+    align-items: center;
+  }
+  form h3{
+    color: #707070;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+  .input-box.button{
+    color:  white;
+    font-weight: 500;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    background: #ff4d00;
+    border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px #ff4d0044;
+  }
+.checkbox-container{
+    background-color: #333;
+  }
+  form .text h3{
+    font-size: 0.8em;
+   color: #fff;
+   width: 100%;
+   text-align: center;
+  }
+  form .text h3 a{
+    margin-left: 3px;
+    color: #ff4d00;
+    text-decoration: none;
+  }
+  form .text h3 a:hover{
+    text-decoration: underline;
+  }
