@@ -1,0 +1,138 @@
+.body-map-container {
+    
+    position: relative;
+
+    width: 40%; /* or responsive unit */
+  }
+  .clickable {
+    position: absolute;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .abc {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    cursor: pointer;
+  }
+  
+  .abc:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px #ff6d00) drop-shadow(0 0 8px #ff3d00);
+  }
+
+  .Muscularbodyparts{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+  }
+  .muscle-heading {
+    text-align: center;
+    color: #ff5722; /* Light reddish-orange */
+    font-size: 2rem;
+    margin-top: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 1px 1px 3px rgba(255, 87, 34, 0.3);
+    border-bottom: 2px solid #ffa726;
+    padding-bottom: 10px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 30px;
+  }
+  .Videos{
+    width: 500px;
+    height: 500px;
+    margin-left: 30px;
+    overflow: hidden;
+  }
+  /* Whole Section */
+.muscle-section {
+  width: 60%;
+  padding: 3rem 5vw;
+  color: #fdfdfd;
+}
+
+/* Title Bar */
+.muscle-title-bar {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.muscle-title-bar h2 {
+  font-size: 2.5rem;
+  color: #ff3d00;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 5px #ff5722, 0 0 10px #ff6d00;
+}
+
+.muscle-title-bar p {
+  color: #ccc;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Video Section */
+.video-section {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  height: 500px;
+  overflow-y: auto;
+  scrollbar-color: #ffffff44 transparent;
+  scrollbar-width: thin;
+  padding: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.video-section::-webkit-scrollbar {
+  width: 8px;
+}
+.video-section::-webkit-scrollbar-thumb {
+  background-color: #ffffff66;
+  border-radius: 4px;
+}
+.video-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Individual Video Card */
+.video-card {
+  background: linear-gradient(145deg, #1a1a1a, #141414);
+  border: 1px solid #ff3d00;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 330px;
+  width: 100%;
+  box-shadow: 0 0 20px rgba(255, 61, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(255, 87, 34, 0.4);
+}
+
+.video-card iframe {
+  width: 100%;
+  height: 200px;
+  border: none;
+  display: block;
+}
+
+.video-card h4 {
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: #ff6d00;
+  background: #1c1c1c;
+  border-top: 1px solid #333;
+  text-align: center;
+}
+
+  
