@@ -94,8 +94,9 @@
   width: 8px;
 }
 .video-section::-webkit-scrollbar-thumb {
-  background-color: #ffffff66;
-  border-radius: 4px;
+  background-color: #e53935; 
+  border-radius: 10px;
+  border: 2px solid #1a1a1a; 
 }
 .video-section::-webkit-scrollbar-track {
   background: transparent;
@@ -135,4 +136,31 @@
   text-align: center;
 }
 
-  
+.your-message-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.your-message-container::-webkit-scrollbar-track {
+  background: #1a1a1a; 
+}
+
+.your-message-container::-webkit-scrollbar-thumb {
+  background-color: #e53935; 
+  border-radius: 10px;
+  border: 2px solid #1a1a1a; 
+}
+
+.your-message-container {
+  scrollbar-width: thin;
+  scrollbar-color: #e53935 #1a1a1a;
+}
+/* Remove number input spinners for all browsers */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}
