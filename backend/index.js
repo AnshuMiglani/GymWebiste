@@ -22,7 +22,6 @@ app.post("/Register", async(req,res)=>{
             email: req.body.email,
             password: req.body.password,
         });
-        console.log(newmem);
         const saved =await newmem.save();
         console.log("hogya");
         res.status(201).send("done");
@@ -35,13 +34,14 @@ app.post("/Register", async(req,res)=>{
 
 
 
+app.use("/api", require("./routes/ask"));
+  
 app.post("/Login", async(req,res)=>{
     try{
         const current= await member.find({email: req.body.email});
         const isMatch= await bcrypt.compare(req.body.password,current[0].password)
         if(isMatch){
             const element= await jwt.sign({userId: current._id},process.env.SECRET_KEY,{expiresIn: "15m"});
-            console.log(element);
             res.cookie("accesstoken",element,{httpOnly:true,secure: true, sameSite:"strict",maxAge:15*60*1000}).status(201).send("done");
         }
         else{

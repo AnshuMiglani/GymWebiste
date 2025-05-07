@@ -46,14 +46,10 @@ const Navbar= (props)=>{
           </div>
         </div>
         <div className="fit-maker-website-frame148">
-          <div className="fit-maker-website-frame147">
-            <a  href="/"><span style={{display:"inline-block",borderBottom:"solid",borderColor:"rgb(191,68,8)"}} className="fit-maker-website-text104 TypographyH3">
-              Home
-            </span></a>
-          </div>
-          <div className="fit-maker-website-frame291">
-            <span className="fit-maker-website-text105 TypographyH3">
-            <div className="dropdown">
+
+            <Link  to="/">
+              Home</Link>
+            <div  className="dropdown">
             <button className="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Programs
             </button>
@@ -63,23 +59,12 @@ const Navbar= (props)=>{
             <li><a className="dropdown-item" href="/">Something else here</a></li>
             </ul>
             </div>
-            </span>
-          </div>
-          <div className="fit-maker-website-frame295">
-            <span className="fit-maker-website-text106 TypographyH3">
-              Dashboard
-            </span>
-          </div>
-          <div className="fit-maker-website-frame293">
-           <a href='/tutorials' ><span className="fit-maker-website-text107 TypographyH3">
-            Tutorials
-            </span></a>
-          </div>
-          <div className="fit-maker-website-frame294">
-            <span className="fit-maker-website-text108 TypographyH3">
-              About Us
-            </span>
-          </div>
+
+            <Link to="/"><p>Dashboard</p></Link>
+
+           <Link to='/tutorials' >
+            Tutorials</Link>
+          <Link to="/">About Us</Link>
         </div>
         {IsAuth? (<div className="fit-maker-website-frame290">
         <img src="https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png" alt="sdbn" className='navbarusericon'></img>
@@ -91,8 +76,9 @@ const Navbar= (props)=>{
           <Link to="/Login"><button className="fit-maker-website-button10">
             <span className="fit-maker-website-text109">Login</span>
           </button></Link>
-          <Link to="/Register"><button className="fit-maker-website-button11">
-            <span className="fit-maker-website-text110">Sign Up</span>
+          <Link to="/Register"><button className="fit-maker-website-button11" >
+            <span style={{ fontFamily:"Vazirmatn",
+  fontWeight: "300",fontSize:"14px",fontStyle:"Light"}}>Sign Up</span>
           </button></Link>
         </div>
         )}
