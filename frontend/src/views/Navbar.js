@@ -47,28 +47,28 @@ const Navbar= (props)=>{
         </div>
         <div className="fit-maker-website-frame148">
 
-            <Link  to="/">
+            <Link style={props.presentab==="Home"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">
               Home</Link>
             <div  className="dropdown">
-            <button className="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button style={props.presentab==="Programs"? {borderTop:"transparent",borderRight:"transparent",borderLeft:"transparent",borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", borderRadius:"0", paddingBottom:"2px"}:{paddingBottom:"2px"}} className="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Programs
             </button>
-            <ul className="dropdown-menu" >
-            <li><a className="dropdown-item" href="/">Action</a></li>
-            <li><a className="dropdown-item" href="/">Another action</a></li>
-            <li><a className="dropdown-item" href="/">Something else here</a></li>
+            <ul  className="dropdown-menu" >
+            <li><Link className="dropdown-item" to="/meal-planner">Meal Planner</Link></li>
+            <li><Link className="dropdown-item" to="/workouts">Workouts</Link></li>
+            <li><Link className="dropdown-item" to="/plans">View Plans</Link></li>
             </ul>
             </div>
 
-            <Link to="/"><p>Dashboard</p></Link>
+            <Link style={props.presentab==="Dashboard"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"5px"}:{paddingBottom:"2px"}} to="/Dashboard"><p>Dashboard</p></Link>
 
-           <Link to='/tutorials' >
+           <Link style={props.presentab==="Tutorials"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to='/tutorials' >
             Tutorials</Link>
-          <Link to="/">About Us</Link>
+          <Link style={props.presentab==="AboutUs"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">About Us</Link>
         </div>
         {IsAuth? (<div className="fit-maker-website-frame290">
-        <img src="https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png" alt="sdbn" className='navbarusericon'></img>
-          <button className="fit-maker-website-button10" onClick={handlelogout}>
+        <img src="https://icones.pro/wp-content/uploads/2021/02/icone-utilisateur-rouge.png" alt="sdbn" className='navbarusericon'></img>
+          <button className="fit-maker-website-button10 " onClick={handlelogout}>
             <span className="fit-maker-website-text109">Logout</span>
           </button>
         </div>):(

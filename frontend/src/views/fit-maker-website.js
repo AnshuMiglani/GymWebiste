@@ -46,7 +46,7 @@ const FitMakerWebsite = (props) => {
         <title>exported project</title>
       </Helmet>
       <div className="fit-maker-website-fit-maker-website">
-        <Navbar/>
+        <Navbar presentab="Home"/>
         <section className="text-white py-16">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between px-6 gap-10">
         
@@ -97,7 +97,7 @@ const FitMakerWebsite = (props) => {
           />
 
           
-          <div className="absolute top-11 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+80 Coaches</div>
+          <div className="absolute top-11 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md ">+80 Coaches</div>
           <div className="absolute top-7 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1300 Reviews</div>
           <div className="absolute bottom-3 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1000 Videos</div>
           <div className="absolute bottom-11 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1500 Trainers</div>
