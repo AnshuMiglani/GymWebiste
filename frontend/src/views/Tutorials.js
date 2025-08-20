@@ -28,7 +28,7 @@ const Tutorials=()=>{
     return(
         <div className="fit-maker-website-container">
         <div className="fit-maker-login-page-navbar">
-        <Navbar/>
+        <Navbar presentab="Tutorials"/>
         </div>
         <div className='Muscularbodyparts'>
         <Muscular present="yes"/>
