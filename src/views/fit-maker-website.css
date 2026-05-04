@@ -1,0 +1,375 @@
+.fit-maker-website-container {
+  width: 100%;
+  display: flex;
+  overflow: visible;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.navbarusericon{
+  margin-right: 30px;
+  width: 50px;
+  height: 50px;
+}
+.dropdown-item:hover{
+  color:#06070d;
+}
+.fit-maker-website-fit-maker-website {
+  gap: 80px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 60px 0 0;
+  overflow: visible;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+.fit-maker-login-page-navbar{
+  gap: 80px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 60px 0 0;
+  overflow: visible;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+.muscleaiicon{
+  position:fixed;
+  background-color: red;
+  padding:10px;
+  bottom:50px;
+  right:60px;
+  z-index:2;
+  width: 60px;
+  height: 60px;
+  border-radius: 40px 40px;
+}
+.muscleiconcontainer{
+  position:fixed;
+  background-color: red;
+  background-color: transparent;
+  padding:10px;
+  bottom:41px;
+  right:51px;
+  z-index:2;
+  width: 80px;
+  height: 80px;
+  border: 2px dashed white;
+  border-radius: 40px 40px;
+  animation: slow-spin 8s linear infinite;
+}
+@keyframes slow-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.fit-maker-website-menu {
+  gap: 24px;
+  width: 1440px;
+  height: 51px;
+  display: flex;
+  padding: 0 98px;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+ 
+.fit-maker-website-frame11 {
+  gap: 10px;
+  width: 116px;
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+
+}
+ 
+.fit-maker-website-frame2891 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+ 
+.fit-maker-website-frame2881 {
+  gap: 6px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-between;
+ background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+ 
+.fit-maker-website-rectangle21 {
+  width: 40px;
+  height: 32px;
+  border-radius: 4px;
+}
+ 
+.fit-maker-website-text100 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Vazirmatn;
+  font-weight: 600;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.fit-maker-website-text101 {
+  color: rgba(255, 255, 255, 1);
+}
+ 
+.fit-maker-website-text103 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  align-self: stretch;
+  text-align: left;
+  line-height: normal;
+  background: linear-gradient(90deg, #06070d, #0c101a, #000);
+  color: white;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+ 
+.fit-maker-website-searchbar {
+  gap: 3px;
+  height: 38px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background-color: var(--dl-color-grey-grey800);
+}
+ 
+.fit-maker-website-frame183 {
+  gap: 3px;
+  display: flex;
+  align-items: center;
+}
+ 
+.fit-maker-website-basilsearchoutline {
+  width: 25px;
+  height: 25px;
+}
+ 
+.fit-maker-website-frame148 {
+  gap: 50px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-around;
+}
+ 
+.fit-maker-website-frame147 {
+  gap: 4px;
+  width: 171.1999969482422px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.fit-maker-website-text104 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  align-self: stretch;
+  text-align: center;
+  line-height: normal;
+}
+ 
+.fit-maker-website-line1 {
+  width: 100px;
+  height: 1px;
+}
+ 
+.fit-maker-website-text105 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  text-align: center;
+  line-height: normal;
+}
+ 
+.fit-maker-website-oouinextltr1 {
+  width: 12px;
+  height: 12px;
+}
+ 
+.fit-maker-website-frame295 {
+  gap: 4px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.fit-maker-website-text106 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  text-align: center;
+  line-height: normal;
+}
+ 
+.fit-maker-website-oouinextltr2 {
+  width: 12px;
+  height: 12px;
+}
+ 
+.fit-maker-website-frame293 {
+  gap: 10px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.fit-maker-website-text107 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  flex-grow: 1;
+  text-align: center;
+  line-height: normal;
+}
+ 
+.fit-maker-website-frame294 {
+  gap: 10px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.fit-maker-website-text108 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  flex-grow: 1;
+  text-align: center;
+  line-height: normal;
+}
+ 
+.fit-maker-website-frame290 {
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+ 
+.fit-maker-website-button10 {
+  gap: 20px;
+  height: 36px;
+  display: flex;
+  padding: 6px 16px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(205, 77, 23, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 12px;
+  justify-content: center;
+}
+ 
+.fit-maker-website-text109 {
+  color: var(--dl-color-orangebutton-normal);
+  height: auto;
+  font-size: 14px;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20000000298023224) ;
+  font-style: Light;
+  text-align: center;
+  font-family: Vazirmatn;
+  font-weight: 300;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+
+.fit-maker-website-button11 {
+  gap: 20px;
+  height: 36px;
+  display: flex;
+  font-size: 1em;
+  padding: 12px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: var(--dl-color-redbutton-normal);
+}
+ 
+.fit-maker-website-text110 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14px;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20000000298023224) ;
+  font-style: Light;
+  text-align: center;
+  font-family: Vazirmatn;
+  font-weight: 300;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.fit-maker-website-color {
+  gap: 1140px;
+  width: 1738px;
+  height: 610px;
+  display: flex;
+  z-index: 1;
+  align-items: flex-end;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+.tool1{
+  background-image: url("../external/ellipse186223-i2-400h.png");
+}
+.tool2{
+  background-image: url("../external/ellipse196223-vzw-400h.png");
+}
+.tool3{
+  background-image: url("../external/ellipse207130-to6t-600w.png");
+}
+.tool4{
+  background-image: url("../external/ellipse217130-27uu-500h.png");
+}
