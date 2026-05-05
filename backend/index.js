@@ -11,7 +11,10 @@ require("dotenv").config();
 const cookieParser= require("cookie-parser");
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000" ,credentials:true}));
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 app.get("/", async(req,res)=>{
     res.send("backend is Running");
 });
@@ -58,8 +61,8 @@ app.post("/Login", async (req, res) => {
 
       res.cookie("accesstoken", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 15 * 60 * 1000,
       });
 
@@ -99,8 +102,8 @@ app.get("/auth-status", async (req, res) => {
 app.post("/Logout", (req, res) => {
   res.clearCookie("accesstoken", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
   res.send("done");
 });
