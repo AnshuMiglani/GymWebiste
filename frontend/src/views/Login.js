@@ -19,12 +19,11 @@ const Login= (props)=>{
         try{
             const response= await axios.post("http://localhost:8000/Login",currentloginbody,{withCredentials:true});
             console.log(response);
-            if(response.status===201){
-                navigate("/");
-            }
-            else{
-                seterrormilgya(true);
-            }
+            if (response.data === "done") {
+  navigate("/");
+} else {
+  seterrormilgya(true);
+}
         }
         catch(e){
             seterrormilgya(true);

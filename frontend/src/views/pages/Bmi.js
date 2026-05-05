@@ -1,25 +1,40 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../BodyMap.css";
+import axios from "axios";
+
 export default function BMICalculator() {
   const [height, setHeight] = useState(); // cm
   const [weight, setWeight] = useState(); // kg
   const [bmi, setBmi] = useState(null);
   const [category, setCategory] = useState("");
 
-  const calculateBMI = () => {
-    const heightInMeters = height / 100;
-    const bmiValue = weight / (heightInMeters * heightInMeters);
-    setBmi(bmiValue.toFixed(1));
+  const calculateBMI = async () => {
+  const heightInMeters = height / 100;
+  const bmiValue = weight / (heightInMeters * heightInMeters);
 
-    let cat = "";
-    if (bmiValue < 18.5) cat = "Underweight";
-    else if (bmiValue < 24.9) cat = "Normal weight";
-    else if (bmiValue < 29.9) cat = "Overweight";
-    else cat = "Obese";
+  const finalBMI = Number(bmiValue.toFixed(1));
+  setBmi(finalBMI);
 
-    setCategory(cat);
-  };
+  let cat = "";
+  if (bmiValue < 18.5) cat = "Underweight";
+  else if (bmiValue < 24.9) cat = "Normal weight";
+  else if (bmiValue < 29.9) cat = "Overweight";
+  else cat = "Obese";
+
+  setCategory(cat);
+
+  // 🔥 SAVE TO BACKEND (only if logged in)
+  try {
+    await axios.post(
+      "http://localhost:8000/save-dashboard",
+      { bmi: finalBMI },
+      { withCredentials: true }
+    );
+  } catch (err) {
+    // silently ignore (user not logged in)
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white p-6 flex flex-col items-center justify-center">

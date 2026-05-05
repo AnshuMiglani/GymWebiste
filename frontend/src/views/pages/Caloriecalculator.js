@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../BodyMap.css";
+import axios from "axios";
 
 const Caloriecalculator = () => {
   const [formData, setFormData] = useState({
@@ -17,25 +18,27 @@ const Caloriecalculator = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const calculateCalories = (e) => {
-    e.preventDefault();
-    const { age, gender, weight, height, activity } = formData;
+  const calculateCalories = async (e) => {
+  e.preventDefault();
 
-    if (!age || !gender || !weight || !height || !activity) {
-      alert("Please fill in all fields");
-      return;
-    }
+  const { age, gender, weight, height, activity } = formData;
 
-    let bmr = 0;
-    if (gender === "male") {
-      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    } else {
-      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-    }
+  let bmr = gender === "male"
+    ? 10 * weight + 6.25 * height - 5 * age + 5
+    : 10 * weight + 6.25 * height - 5 * age - 161;
 
-    const tdee = bmr * parseFloat(activity);
-    setCalories(Math.round(tdee));
-  };
+  const tdee = Math.round(bmr * parseFloat(activity));
+  setCalories(tdee);
+
+  // 🔥 SAVE
+  try {
+    await axios.post(
+      "http://localhost:8000/save-dashboard",
+      { calories: tdee },
+      { withCredentials: true }
+    );
+  } catch {}
+};
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">

@@ -23,7 +23,17 @@ const memberschema= new mongoose.Schema({
     password:{
         type: String,
         required: true
-    }
+    },
+    dashboard: {
+    bmi: { type: Number, default: null },
+    calories: { type: Number, default: null },
+    workout: { type: String, default: null },
+    macros: {
+    protein: { type: Number, default: null },
+    carbs: { type: Number, default: null },
+    fat: { type: Number, default: null },
+  },
+  },
 });
 
 memberschema.pre("save",async function(next){

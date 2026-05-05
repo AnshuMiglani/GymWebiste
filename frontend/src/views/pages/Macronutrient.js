@@ -1,38 +1,54 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../BodyMap.css";
+import axios from "axios";
 export default function MacronutrientCalculator() {
   const [weight, setWeight] = useState(); // in kg
   const [goal, setGoal] = useState("maintain");
   const [macros, setMacros] = useState(null);
 
-  const calculateMacros = () => {
-    let protein, carbs, fat;
-    const weightInLbs = weight * 2.20462;
+ const calculateMacros = async () => {
+  let protein, carbs, fat;
+  const weightInLbs = weight * 2.20462;
 
-    switch (goal) {
-      case "lose":
-        protein = weightInLbs * 1.2;
-        carbs = weightInLbs * 0.8;
-        fat = weightInLbs * 0.4;
-        break;
-      case "gain":
-        protein = weightInLbs * 1.0;
-        carbs = weightInLbs * 2.0;
-        fat = weightInLbs * 0.5;
-        break;
-      default:
-        protein = weightInLbs * 0.8;
-        carbs = weightInLbs * 1.5;
-        fat = weightInLbs * 0.4;
-    }
+  switch (goal) {
+    case "lose":
+      protein = weightInLbs * 1.2;
+      carbs = weightInLbs * 0.8;
+      fat = weightInLbs * 0.4;
+      break;
+    case "gain":
+      protein = weightInLbs * 1.0;
+      carbs = weightInLbs * 2.0;
+      fat = weightInLbs * 0.5;
+      break;
+    default:
+      protein = weightInLbs * 0.8;
+      carbs = weightInLbs * 1.5;
+      fat = weightInLbs * 0.4;
+  }
 
-    setMacros({
-      protein: protein.toFixed(0),
-      carbs: carbs.toFixed(0),
-      fat: fat.toFixed(0),
-    });
+  const finalMacros = {
+    protein: Number(protein.toFixed(0)),
+    carbs: Number(carbs.toFixed(0)),
+    fat: Number(fat.toFixed(0)),
   };
+
+  setMacros(finalMacros);
+
+  // 🔥 SAVE TO BACKEND
+  try {
+    await axios.post(
+      "http://localhost:8000/save-dashboard",
+      {
+        macros: finalMacros,   // 👈 important
+      },
+      { withCredentials: true }
+    );
+  } catch (err) {
+    // ignore if not logged in
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white p-6 flex flex-col items-center justify-center">
