@@ -30,8 +30,8 @@ app.post("/Register", async(req,res)=>{
         res.status(201).send("done");
     }
     catch(e){
-        console.log(e);
-        res.status(400).send(e);
+    console.log("ERROR 👉", e);
+    res.status(400).send(e.message);
     }
 });
 
