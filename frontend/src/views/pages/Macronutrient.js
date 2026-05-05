@@ -39,7 +39,7 @@ export default function MacronutrientCalculator() {
   // 🔥 SAVE TO BACKEND
   try {
     await axios.post(
-      "http://localhost:8000/save-dashboard",
+      `${process.env.REACT_APP_BACKEND_URL}/save-dashboard`,
       {
         macros: finalMacros,   // 👈 important
       },

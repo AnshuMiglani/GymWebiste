@@ -10,7 +10,7 @@ const [userName, setUserName] = useState("");
     
     useEffect(() => {
   axios
-    .get("http://localhost:8000/auth-status", { withCredentials: true })
+    .get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`, { withCredentials: true })
     .then((res) => {
       console.log("AUTH RESPONSE 👉", res.data);
 
@@ -30,7 +30,7 @@ const [userName, setUserName] = useState("");
 }, []);
 
     const handlelogout= async()=>{
-      await axios.post("http://localhost:8000/Logout",{},{withCredentials:true});
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/Logout`,{},{withCredentials:true});
       window.location.reload();
     }
     const initial =

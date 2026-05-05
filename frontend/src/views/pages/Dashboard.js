@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaHome, FaDumbbell, FaBolt, FaBook, FaInfoCircle, FaUser, FaCrown } from "react-icons/fa";
+import { FaHome, FaDumbbell, FaBolt, FaBook, FaInfoCircle, FaCrown } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -11,7 +11,7 @@ const [dashboardData, setDashboardData] = useState({});
 
 useEffect(() => {
   axios
-    .get("http://localhost:8000/auth-status", { withCredentials: true })
+    .get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`, { withCredentials: true })
     .then((res) => {
       console.log("AUTH 👉", res.data);
 
@@ -21,7 +21,7 @@ useEffect(() => {
 
         // ✅ ONLY fetch dashboard if logged in
         axios
-          .get("http://localhost:8000/dashboard-data", {
+          .get(`${process.env.REACT_APP_BACKEND_URL}/dashboard-data`, {
             withCredentials: true,
           })
           .then((res) => {

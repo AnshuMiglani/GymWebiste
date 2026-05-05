@@ -61,11 +61,10 @@ const VideoCard = ({ videoId, title }) => {
   );
 };
 const MuscleTutorial=()=>{
-  const [IsAuth,setIsAuth]= useState(false);
   const [showModal,setshowModal]= useState(false);
   useEffect(()=>{
-    axios.get("http://localhost:8000/auth-status",{withCredentials:true})
-    .then((res) => {setIsAuth(res.data.Ispresent);
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`,{withCredentials:true})
+    .then((res) => {
       if(res.data.Ispresent){
           setshowModal(false);
       }
@@ -73,7 +72,7 @@ const MuscleTutorial=()=>{
           setshowModal(true);
       }
     })
-    .catch(()=>{setIsAuth(false);setshowModal(true)});
+    .catch(()=>{setshowModal(true)});
   },[]);
 
     const {musclename} = useParams();

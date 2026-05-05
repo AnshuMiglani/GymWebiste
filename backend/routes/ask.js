@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+require("dotenv").config();
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
@@ -50,7 +51,7 @@ router.post("/ask", async (req, res) => {
         headers: {
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
+          "HTTP-Referer": process.env.FRONTEND_URL,
           "X-Title": "FitBot AI",
         },
       }

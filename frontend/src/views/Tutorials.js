@@ -9,11 +9,10 @@ import "./LoginPromptModal.css";
 
 
 const Tutorials=()=>{
-    const [IsAuth,setIsAuth]= useState(false);
     const [showModal,setshowModal]= useState(false);
     useEffect(()=>{
-      axios.get("http://localhost:8000/auth-status",{withCredentials:true})
-      .then((res) => {setIsAuth(res.data.Ispresent);
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`,{withCredentials:true})
+      .then((res) => {
         if(res.data.Ispresent){
             setshowModal(false);
         }
@@ -21,7 +20,7 @@ const Tutorials=()=>{
             setshowModal(true);
         }
       })
-      .catch(()=>{setIsAuth(false);setshowModal(true)});
+      .catch(()=>{setshowModal(true)});
     },[]);
 
 

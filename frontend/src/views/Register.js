@@ -18,7 +18,7 @@ const Register=(props)=>{
     try{
       if(currentbody.password===currentbody.cpassword){
       seterroraagya(false);
-      const response= await axios.post("http://localhost:8000/Register",currentbody,{withCredentials:true});
+      const response= await axios.post(`${process.env.REACT_APP_BACKEND_URL}/Register`,currentbody,{withCredentials:true});
       if(response.status===201){
         navigate("/Login");
       }

@@ -33,7 +33,7 @@ const Caloriecalculator = () => {
   // 🔥 SAVE
   try {
     await axios.post(
-      "http://localhost:8000/save-dashboard",
+      `${process.env.REACT_APP_BACKEND_URL}/save-dashboard`,
       { calories: tdee },
       { withCredentials: true }
     );

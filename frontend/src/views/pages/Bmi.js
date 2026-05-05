@@ -27,7 +27,7 @@ export default function BMICalculator() {
   // 🔥 SAVE TO BACKEND (only if logged in)
   try {
     await axios.post(
-      "http://localhost:8000/save-dashboard",
+      `${process.env.REACT_APP_BACKEND_URL}/save-dashboard`,
       { bmi: finalBMI },
       { withCredentials: true }
     );

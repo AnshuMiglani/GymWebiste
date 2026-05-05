@@ -18,7 +18,7 @@ export default function GeminiChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/api/ask", {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/ask`,{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
@@ -41,11 +41,10 @@ export default function GeminiChat() {
     setLoading(false);
   };
 
-  const [IsAuth,setIsAuth]= useState(false);
     const [showModal,setshowModal]= useState(false);
     useEffect(()=>{
-      axios.get("http://localhost:8000/auth-status",{withCredentials:true})
-      .then((res) => {setIsAuth(res.data.Ispresent);
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`,{withCredentials:true})
+      .then((res) => {
         if(res.data.Ispresent){
             setshowModal(false);
         }
@@ -53,7 +52,7 @@ export default function GeminiChat() {
             setshowModal(true);
         }
       })
-      .catch(()=>{setIsAuth(false);setshowModal(true)});
+      .catch(()=>{setshowModal(true)});
     },[]);
   return (
     <div className="flex items-center justify-center p-2">
