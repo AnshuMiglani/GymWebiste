@@ -4,17 +4,37 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Navbar= (props)=>{
-    const [IsAuth,setIsAuth]= useState(false);
-    useEffect(()=>{
-      axios.get("http://localhost:8000/auth-status",{withCredentials:true})
-      .then(res => setIsAuth(res.data.Ispresent))
-      .catch(()=>setIsAuth(false));
-    },[]);
+    const [IsAuth, setIsAuth] = useState(false);
+const [userEmail, setUserEmail] = useState("");
+const [userName, setUserName] = useState("");
+    
+    useEffect(() => {
+  axios
+    .get("http://localhost:8000/auth-status", { withCredentials: true })
+    .then((res) => {
+      console.log("AUTH RESPONSE 👉", res.data);
+
+      setIsAuth(res.data.Ispresent);
+
+      if (res.data.Ispresent) {
+        setUserEmail(res.data.email || "");
+        setUserName(res.data.name || "");
+      }
+    })
+    .catch((err) => {
+      console.log("AUTH ERROR 👉", err);
+      setIsAuth(false);
+      setUserEmail("");
+      setUserName("");
+    });
+}, []);
 
     const handlelogout= async()=>{
       await axios.post("http://localhost:8000/Logout",{},{withCredentials:true});
       window.location.reload();
     }
+    const initial =
+  (userName || userEmail)?.charAt(0)?.toUpperCase() || "U";
     return(
         <div className="fit-maker-website-menu">
         <div className="fit-maker-website-frame11">
@@ -66,12 +86,22 @@ const Navbar= (props)=>{
             Tutorials</Link>
           <Link style={props.presentab==="AboutUs"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">About Us</Link>
         </div>
-        {IsAuth? (<div className="fit-maker-website-frame290">
-        <img src="https://icones.pro/wp-content/uploads/2021/02/icone-utilisateur-rouge.png" alt="sdbn" className='navbarusericon'></img>
-          <button className="fit-maker-website-button10 " onClick={handlelogout}>
-            <span className="fit-maker-website-text109">Logout</span>
-          </button>
-        </div>):(
+        {IsAuth? (<div className="flex items-center gap-3">
+  
+  {/* Avatar */}
+  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:scale-105 transition duration-200 shadow-lg shadow-red-500/30">
+    {initial}
+  </div>
+
+  {/* Logout Button */}
+  <button
+    onClick={handlelogout}
+    className="px-4 py-2 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-200 text-sm font-medium"
+  >
+    Logout
+  </button>
+
+</div>):(
           <div className="fit-maker-website-frame290">
           <Link to="/Login"><button className="fit-maker-website-button10">
             <span className="fit-maker-website-text109">Login</span>

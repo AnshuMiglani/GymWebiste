@@ -2,37 +2,67 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
+// ✅ simple keyword filter
+const isFitnessQuery = (text) => {
+  const fitnessKeywords = [
+    "gym", "workout", "exercise", "fitness", "diet", "nutrition",
+    "protein", "muscle", "fat", "weight", "cardio", "training",
+    "chest", "back", "biceps", "triceps", "legs", "shoulder",
+    "abs", "calories", "meal", "health", "body", "strength",
+    "hi", "hello", "hey"
+  ];
+
+  const lowerText = text.toLowerCase();
+  return fitnessKeywords.some((word) => lowerText.includes(word));
+};
 
 router.post("/ask", async (req, res) => {
   const userPrompt = req.body.prompt;
 
+  // ❌ block non-fitness queries
+  if (!isFitnessQuery(userPrompt)) {
+    return res.json({
+      reply:
+        "Sorry, I only answer fitness, gym, diet, and health-related questions."
+    });
+  }
+
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        contents: [
+        model: "meta-llama/llama-3-8b-instruct",
+        messages: [
           {
-            parts: [
-              {
-                text: `${userPrompt} (Respond in under 50 words.)`,
-              },
-            ],
+            role: "system",
+            content:
+              "You are a strict fitness coach AI. Only answer questions related to gym, diet, health, or workouts. If user asks anything outside this, reply: 'Sorry, I only answer fitness-related questions.' Keep answers under 50 words. Be helpful and clear.",
+          },
+          {
+            role: "user",
+            content: userPrompt,
           },
         ],
       },
       {
         headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "FitBot AI",
         },
       }
     );
+
     const reply =
-      response.data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+      response.data.choices?.[0]?.message?.content || "No response.";
+
     res.json({ reply });
   } catch (err) {
-    console.error("Error from Gemini API:", err.message);
-    res.status(500).json({ error: "Failed to get a response from Gemini API." });
+    console.error("OpenRouter Error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to get AI response" });
   }
 });
 
