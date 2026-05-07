@@ -38,6 +38,7 @@ app.post("/Register", async(req,res)=>{
 
 
 app.use("/api", require("./routes/ask"));
+app.use("/api", require("./routes/mealask"));
 
 app.post("/test", (req, res) => {
   res.send("TEST OK");

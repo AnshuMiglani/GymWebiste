@@ -2,67 +2,127 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
 router.post("/meal-planner", async (req, res) => {
   const { dietType, dailyCalories, mealsPerDay } = req.body;
 
+  // ✅ BLOCK unrealistic calories
+  if (dailyCalories > 10000) {
+    return res.status(400).json({
+      error:
+        "Calorie input exceeds safe limits. Our platform is designed for realistic fitness goals, and values above 10,000 kcal are not supported.",
+    });
+  }
+
+  // optional lower bound too
+  if (dailyCalories < 800) {
+    return res.status(400).json({
+      error:
+        "Calorie input is too low. Please enter a realistic value for a healthy meal plan.",
+    });
+  }
+
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        contents: [
+        model: "meta-llama/llama-3-8b-instruct",
+        messages: [
           {
-            parts: [
-              {
-                text: `
-You are a meal planning assistant.
-Generate a structured ${dietType} meal plan for ${mealsPerDay} meals per day.
-Target total calories: ${dailyCalories}.
-Each meal should have:
-- Meal name
-- List of food items with calories
+            role: "system",
+            content: `
+You are a professional dietician AI.
 
-Return JSON only in this format:
+Generate a structured meal plan.
+
+STRICT RULES:
+- Return ONLY valid JSON
+- No explanation
+- No markdown
+- No extra text
+
+Format:
 {
   "meals": [
     {
       "name": "Breakfast",
       "items": [
-        { "food": "Oats with milk", "calories": 250 },
-        { "food": "Banana", "calories": 100 }
+        { "food": "Oats", "calories": 250 }
       ],
       "totalCalories": 350
     }
   ],
   "dailyTotal": 2000
 }
+  Ensure:
+- Sum of all meal totalCalories MUST equal dailyTotal
+- Each meal totalCalories must equal sum of its items
+- Use realistic calorie values
 `
-              }
-            ]
+          },
+          {
+            role: "user",
+            content: `
+Create a ${dietType} meal plan.
+Calories: ${dailyCalories}
+Meals per day: ${mealsPerDay}
+`
           }
-        ]
+        ],
       },
-      { headers: { "Content-Type": "application/json" } }
+      {
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": process.env.FRONTEND_URL,
+          "X-Title": "FitBot Meal Planner",
+        },
+      }
     );
 
-    const reply =
-      response.data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+    let reply =
+      response.data.choices?.[0]?.message?.content || "";
 
-    // Try parsing JSON
-    const cleanedText = reply
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
+    // 🔥 CLEAN RESPONSE (important)
+    reply = reply
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
     let mealPlan;
+
     try {
-      mealPlan = JSON.parse(cleanedText);
+      mealPlan = JSON.parse(reply);
     } catch (e) {
-      return res.status(500).json({ error: "Invalid response format from Gemini." });
+      console.log("❌ RAW AI RESPONSE:", reply);
+      return res.status(500).json({
+        error: "AI returned invalid JSON",
+      });
     }
-    res.json(mealPlan);
+
+    // 🔥 FIX CALCULATIONS (SOURCE OF TRUTH)
+let correctedMeals = mealPlan.meals.map((meal) => {
+  const total = meal.items.reduce((sum, item) => sum + item.calories, 0);
+  return {
+    ...meal,
+    totalCalories: total,
+  };
+});
+
+const correctedDailyTotal = correctedMeals.reduce(
+  (sum, meal) => sum + meal.totalCalories,
+  0
+);
+
+res.json({
+  meals: correctedMeals,
+  dailyTotal: correctedDailyTotal,
+});
+
   } catch (err) {
-    console.error("Error from Gemini API:", err.message);
-    res.status(500).json({ error: "Failed to get meal plan from Gemini API." });
+    console.error("OpenRouter Error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to generate meal plan" });
   }
 });
 
