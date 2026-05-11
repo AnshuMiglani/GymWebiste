@@ -9,12 +9,25 @@ const member= require("./models/formdata");
 require("./db/connection");
 require("dotenv").config();
 const cookieParser= require("cookie-parser");
+const nodemailer = require("nodemailer");
+
+const otpStore = {};
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true
 }));
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+
 app.get("/", async(req,res)=>{
     res.send("backend is Running");
 });
@@ -168,6 +181,265 @@ app.get("/dashboard-data", async (req, res) => {
     res.json({});
   }
 });
+
+app.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await member.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not found",
+      });
+    }
+
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    otpStore[email] = {
+      otp,
+      verified: false,
+      expires: Date.now() + 3 * 60 * 1000, // 3 mins
+    };
+
+    await transporter.sendMail({
+      from: `"MakeFit Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "MakeFit Password Reset OTP",
+      html: `
+      <div style="
+        background:#0f172a;
+        padding:30px;
+        color:white;
+        font-family:Arial;
+      ">
+        <h1 style="color:#f97316">
+          MakeFit
+        </h1>
+
+        <p>Password Reset OTP</p>
+
+        <div style="
+          background:#1e293b;
+          padding:20px;
+          border-radius:10px;
+          text-align:center;
+          margin-top:20px;
+        ">
+          <h2 style="
+            color:#f97316;
+            letter-spacing:8px;
+          ">
+            ${otp}
+          </h2>
+        </div>
+
+        <p style="margin-top:20px;color:#94a3b8">
+          OTP valid for 3 minutes.
+        </p>
+      </div>
+      `,
+    });
+
+    res.json({
+      success: true,
+      message: "OTP sent",
+    });
+
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send OTP",
+    });
+  }
+});
+
+app.post("/verify-otp", (req, res) => {
+  const { email, otp } = req.body;
+
+  const stored = otpStore[email];
+
+  if (!stored) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP not found",
+    });
+  }
+
+  if (stored.expires < Date.now()) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP expired",
+    });
+  }
+
+  if (stored.otp !== otp) {
+    return res.status(400).json({
+      success: false,
+      message: "Incorrect OTP",
+    });
+  }
+
+  stored.verified = true;
+
+  res.json({
+    success: true,
+    message: "OTP verified",
+  });
+});
+
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const stored = otpStore[email];
+
+    if (!stored || !stored.verified) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP verification required",
+      });
+    }
+
+    if (stored.expires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      10
+    );
+
+    await member.findOneAndUpdate(
+      { email },
+      {
+        password: hashedPassword,
+      }
+    );
+
+    delete otpStore[email];
+
+    res.json({
+      success: true,
+      message: "Password updated",
+    });
+
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/send-feedback", async (req, res) => {
+
+  try {
+
+    const token =
+      req.cookies.accesstoken;
+
+    if (!token) {
+
+      return res.status(401).json({
+        success: false,
+        message: "Login required",
+      });
+
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.SECRET_KEY
+    );
+
+    const user = await member
+      .findById(decoded.userId)
+      .select("name email");
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+      });
+
+    }
+
+    const { message } = req.body;
+
+    await transporter.sendMail({
+
+      from: "MakeFit Feedback",
+
+      to: `<${process.env.EMAIL_USER}>`,
+
+      subject: "New MakeFit Feedback",
+
+      html: `
+      <div style="
+        background:#0f172a;
+        padding:30px;
+        color:white;
+        font-family:Arial;
+      ">
+
+        <h1 style="
+          color:#f97316;
+        ">
+          New Feedback Received
+        </h1>
+
+        <p>
+          <strong>Name:</strong>
+          ${user.name}
+        </p>
+
+        <p>
+          <strong>Email:</strong>
+          ${user.email}
+        </p>
+
+        <div style="
+          margin-top:20px;
+          background:#1e293b;
+          padding:20px;
+          border-radius:12px;
+        ">
+
+          ${message}
+
+        </div>
+
+      </div>
+      `,
+    });
+
+    res.json({
+      success: true,
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+    });
+
+  }
+
+});
+
 const verifyToken = (req, res, next) => {
     const token = req.cookies.accessToken;
     if (!token) return res.status(403).json({ message: "Unauthorized" });

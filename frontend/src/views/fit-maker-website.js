@@ -1,10 +1,11 @@
-import {React,useState} from 'react'
+import {React,useState,useEffect} from 'react'
 import { Helmet } from 'react-helmet';
 import Navbar from './Navbar.js';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './fit-maker-website.css';
 import { Link } from 'react-router-dom';
 import Tools from './pages/Tools.js';
+import axios from 'axios';
 import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
 
 
@@ -35,9 +36,107 @@ const faqs = [
 const FitMakerWebsite = (props) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
+  const [feedbackMessage, setFeedbackMessage] =
+  useState("");
+
+const [currentUser, setCurrentUser] =
+  useState(null);
+
+const [feedbackError, setFeedbackError] =
+  useState("");
+
+const [feedbackLoading, setFeedbackLoading] =
+  useState(false);
+
+const [feedbackSuccess, setFeedbackSuccess] =
+  useState(false);
+
   const toggleFAQ = (index) => {
     setActiveIndex((prev) => (prev === index ? null : index));
   };
+
+
+  useEffect(() => {
+
+  const fetchUser = async () => {
+
+    try {
+
+      const res = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/auth-status`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.Ispresent) {
+
+        setCurrentUser({
+          name: res.data.name,
+          email: res.data.email,
+        });
+
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+  };
+
+  fetchUser();
+
+}, []);
+
+const sendFeedback = async (e) => {
+
+  e.preventDefault();
+
+  if (!currentUser) {
+
+    setFeedbackError(
+      "Please login to share feedback."
+    );
+
+    return;
+
+  }
+
+  try {
+
+    setFeedbackLoading(true);
+
+    setFeedbackError("");
+
+    await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/send-feedback`,
+      {
+        message: feedbackMessage,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    setFeedbackSuccess(true);
+
+    setFeedbackMessage("");
+
+  } catch (err) {
+
+    setFeedbackError(
+      "Failed to send feedback."
+    );
+
+  } finally {
+
+    setFeedbackLoading(false);
+
+  }
+
+};
 
 
   return (
@@ -46,7 +145,9 @@ const FitMakerWebsite = (props) => {
         <title>exported project</title>
       </Helmet>
       <div className="fit-maker-website-fit-maker-website">
-        <Navbar presentab="Home"/>
+        <div className="navbarWrapper">
+  <Navbar presentab="Home"/>
+</div>
         <section className="text-white py-16">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between px-6 gap-10">
         
@@ -225,6 +326,106 @@ const FitMakerWebsite = (props) => {
         </div>
       </div>
     </section>
+
+    <section className="w-full bg-black py-20 px-4 text-white">
+
+  <div className="max-w-3xl mx-auto">
+
+    <div className="text-center mb-10">
+
+      <h2 className="text-4xl font-bold">
+        Share Your
+        <span className="text-orange-500">
+          {" "}Feedback
+        </span>
+      </h2>
+
+      <p className="text-gray-400 mt-3">
+        We'd love to hear your experience,
+        suggestions, or ideas to improve MakeFit.
+      </p>
+
+    </div>
+
+    <form
+      onSubmit={sendFeedback}
+      className="space-y-6"
+    >
+
+      <textarea
+        rows="6"
+        placeholder="Write your feedback..."
+        value={feedbackMessage}
+        onChange={(e) =>
+          setFeedbackMessage(e.target.value)
+        }
+        required
+        className="
+          w-full
+          bg-white/5
+          border
+          border-orange-500/20
+          rounded-xl
+          px-5
+          py-4
+          outline-none
+          focus:border-orange-500
+          transition
+          resize-none
+        "
+      />
+      {feedbackError && (
+
+  <p className="text-red-500 text-center">
+
+    {feedbackError}
+
+  </p>
+
+)}
+
+      <button
+        type="submit"
+        disabled={feedbackLoading}
+        className="
+          w-full
+          bg-gradient-to-r
+          from-orange-600
+          to-red-600
+          hover:from-orange-500
+          hover:to-red-500
+          py-4
+          rounded-xl
+          font-bold
+          text-lg
+          transition-all
+          duration-300
+          shadow-lg
+          hover:shadow-orange-500/30
+        "
+      >
+
+        {feedbackLoading
+          ? "Sending..."
+          : "Send Feedback"}
+
+      </button>
+
+      {feedbackSuccess && (
+
+        <p className="text-green-400 text-center">
+
+          Thank you for your feedback ❤️
+
+        </p>
+
+      )}
+
+    </form>
+
+  </div>
+
+</section>
     </div>
       <footer className="bg-[#0e0e0e] text-gray-300 pt-16 pb-10 px-4 w-full">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10">

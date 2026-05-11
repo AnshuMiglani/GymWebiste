@@ -53,10 +53,10 @@ Format:
       "totalCalories": 350
     }
   ],
-  "dailyTotal": 2000
+  "dailyTotal": ${dailyCalories}
 }
   Ensure:
-- Sum of all meal totalCalories MUST equal dailyTotal
+- Sum of all meal totalCalories MUST equal ${dailyCalories}
 - Each meal totalCalories must equal sum of its items
 - Use realistic calorie values
 `
@@ -101,23 +101,44 @@ Meals per day: ${mealsPerDay}
       });
     }
 
-    // 🔥 FIX CALCULATIONS (SOURCE OF TRUTH)
+// ✅ RECALCULATE ALL MEALS
 let correctedMeals = mealPlan.meals.map((meal) => {
-  const total = meal.items.reduce((sum, item) => sum + item.calories, 0);
+  const total = meal.items.reduce(
+    (sum, item) => sum + Number(item.calories || 0),
+    0
+  );
+
   return {
     ...meal,
     totalCalories: total,
   };
 });
 
-const correctedDailyTotal = correctedMeals.reduce(
+let currentTotal = correctedMeals.reduce(
+  (sum, meal) => sum + meal.totalCalories,
+  0
+);
+
+let difference = dailyCalories - currentTotal;
+
+if (correctedMeals.length > 0) {
+  correctedMeals[correctedMeals.length - 1].items.push({
+    food: "Calorie Adjustment",
+    calories: difference,
+  });
+
+  correctedMeals[correctedMeals.length - 1].totalCalories += difference;
+}
+
+// ✅ FINAL TOTAL
+const finalTotal = correctedMeals.reduce(
   (sum, meal) => sum + meal.totalCalories,
   0
 );
 
 res.json({
   meals: correctedMeals,
-  dailyTotal: correctedDailyTotal,
+  dailyTotal: finalTotal,
 });
 
   } catch (err) {
