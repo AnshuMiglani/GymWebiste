@@ -68,7 +68,7 @@ section .signin .content .form
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 section .signin .content .form .inputBox
 {
@@ -163,4 +163,109 @@ input[type="submit"]:active
   background-color: rgba(255, 255, 255, 0.12);
   border-color: #ff2600;
   box-shadow: 0 0 6px #ff110088;
+}
+.otpContainer{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  margin:10px 0 8px;
+}
+
+.otpInput{
+  width:48px;
+  height:56px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+  color:white;
+  font-size:1.4rem;
+  font-weight:700;
+  text-align:center;
+  outline:none;
+  transition:all 0.25s ease;
+}
+
+.otpInput:focus{
+  border:1px solid #E65103;
+  box-shadow:0 0 12px rgba(230,81,3,0.35);
+  transform:translateY(-2px);
+}
+
+.otpError{
+  border:1px solid #ff3b3b !important;
+  box-shadow:0 0 10px rgba(255,59,59,0.35);
+}
+
+.otpErrorText{
+  color:red;
+  text-align:center;
+  margin-top:10px;
+}
+
+.timerText{
+  text-align:center;
+  color:#aaa;
+  margin-bottom:20px;
+}
+
+.resendOtp{
+  color:#f97316;
+  cursor:pointer;
+}
+
+.errorBorder{
+  border:2px solid red !important;
+}
+
+section .signin .content .form .inputBox input[type="button"]
+{
+  padding: 12px;
+  background: linear-gradient(135deg, #E65103, #BF4408);
+  color: white;
+  font-weight: 700;
+  font-size: 1.05em;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  border: none;
+  border-radius: 14px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 25px rgba(230, 81, 3, 0.25);
+}
+
+section .signin .content .form .inputBox input[type="button"]:hover
+{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(230, 81, 3, 0.35);
+}
+
+section .signin .content .form .inputBox input[type="button"]:active
+{
+  transform: scale(0.98);
+}
+
+.timerText{
+  text-align:center;
+  color:#b8b8b8;
+  font-size:0.95rem;
+  margin-top:4px;
+  margin-bottom:20px;
+}
+
+.timerCountdown{
+  color:#888;
+  font-weight:600;
+}
+
+.resendOtp{
+  color:#E65103;
+  cursor:pointer;
+  font-weight:700;
+  margin-left:6px;
+  transition:0.2s ease;
+}
+
+.resendOtp:hover{
+  color:#ff7b33;
 }
