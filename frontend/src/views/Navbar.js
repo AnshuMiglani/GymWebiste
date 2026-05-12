@@ -55,16 +55,6 @@ const [userName, setUserName] = useState("");
             </span>
           </div>
         </div>
-        <div className="fit-maker-website-searchbar">
-          <div className="fit-maker-website-frame183">
-            <img
-              src="https://icons.veryicon.com/png/o/miscellaneous/big-data-regular-monochrome-icon/search-893.png"
-              alt="basilsearchoutline3109"
-              className="fit-maker-website-basilsearchoutline"
-              style={{color: "grey"}}
-            />
-          </div>
-        </div>
         <div className="fit-maker-website-frame148">
 
             <Link style={props.presentab==="Home"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">
