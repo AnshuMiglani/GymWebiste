@@ -198,10 +198,10 @@ const sendFeedback = async (e) => {
           />
 
           
-          <div className="absolute top-11 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md ">+80 Coaches</div>
-          <div className="absolute top-7 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1300 Reviews</div>
-          <div className="absolute bottom-3 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1000 Videos</div>
-          <div className="absolute bottom-11 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">+1500 Trainers</div>
+          <div className="absolute top-11 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md ">80+ Coaches</div>
+          <div className="absolute top-7 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">1300+ Reviews</div>
+          <div className="absolute bottom-3 left-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">1000+ Videos</div>
+          <div className="absolute bottom-11 right-2 bg-black/70 text-white text-sm px-3 py-1 rounded-md">1500+ Trainers</div>
         </div>
       </div>
       <div className='muscleiconcontainer'></div>
@@ -214,11 +214,11 @@ const sendFeedback = async (e) => {
             <p className="text-sm text-gray-300">Client Satisfaction</p>
           </div>
           <div>
-            <p className="text-3xl font-bold text-orange-400">+5</p>
+            <p className="text-3xl font-bold text-orange-400">5+</p>
             <p className="text-sm text-gray-300">Years Of Experience</p>
           </div>
           <div>
-            <p className="text-3xl font-bold text-red-500">+800</p>
+            <p className="text-3xl font-bold text-red-500">800+</p>
             <p className="text-sm text-gray-300">Active Members</p>
           </div>
           <div>
