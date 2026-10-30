@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import Navbar from './Navbar.js';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './fit-maker-website.css';
 import { Link } from 'react-router-dom';
 import Tools from './pages/Tools.js';
+import axios from 'axios';
 import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
 
 
@@ -55,86 +57,61 @@ const [feedbackSuccess, setFeedbackSuccess] =
 
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+        const res = await axios.get(
+          `${backendUrl}/auth-status`,
+          {
+            withCredentials: true,
+          }
+        );
 
-  const fetchUser = async () => {
+        if (res.data.Ispresent) {
+          setCurrentUser({
+            name: res.data.name,
+            email: res.data.email,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const sendFeedback = async (e) => {
+    e.preventDefault();
+
+    if (!currentUser) {
+      setFeedbackError("Please login to share feedback.");
+      return;
+    }
 
     try {
+      setFeedbackLoading(true);
+      setFeedbackError("");
 
-      const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/auth-status`,
+      const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+      await axios.post(
+        `${backendUrl}/send-feedback`,
+        {
+          message: feedbackMessage,
+        },
         {
           withCredentials: true,
         }
       );
 
-      if (res.data.Ispresent) {
-
-        setCurrentUser({
-          name: res.data.name,
-          email: res.data.email,
-        });
-
-      }
-
+      setFeedbackSuccess(true);
+      setFeedbackMessage("");
     } catch (err) {
-
-      console.log(err);
-
+      setFeedbackError("Failed to send feedback.");
+    } finally {
+      setFeedbackLoading(false);
     }
-
   };
-
-  fetchUser();
-
-}, []);
-
-const sendFeedback = async (e) => {
-
-  e.preventDefault();
-
-  if (!currentUser) {
-
-    setFeedbackError(
-      "Please login to share feedback."
-    );
-
-    return;
-
-  }
-
-  try {
-
-    setFeedbackLoading(true);
-
-    setFeedbackError("");
-
-    await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/send-feedback`,
-      {
-        message: feedbackMessage,
-      },
-      {
-        withCredentials: true,
-      }
-    );
-
-    setFeedbackSuccess(true);
-
-    setFeedbackMessage("");
-
-  } catch (err) {
-
-    setFeedbackError(
-      "Failed to send feedback."
-    );
-
-  } finally {
-
-    setFeedbackLoading(false);
-
-  }
-
-};
 
 
   return (
