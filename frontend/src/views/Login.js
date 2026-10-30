@@ -128,6 +128,10 @@ const Login = (props) => {
         if (response.data?.token) {
           localStorage.setItem("token", response.data.token);
         }
+        if (response.data?.user) {
+          localStorage.setItem("userName", response.data.user.name || "");
+          localStorage.setItem("userEmail", response.data.user.email || "");
+        }
         navigate("/");
       } else {
         setErrorMessage(response.data?.error || "Invalid username or password");

@@ -3,48 +3,79 @@ import './fit-maker-website.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Navbar= (props)=>{
-    const [IsAuth, setIsAuth] = useState(false);
-    const [userEmail, setUserEmail] = useState("");
-    const [userName, setUserName] = useState("");
-    const [authLoading, setAuthLoading] = useState(true);
-    
-    useEffect(() => {
-  const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
-  axios
-    .get(`${backendUrl}/auth-status`, { withCredentials: true })
-    .then((res) => {
-      console.log("AUTH RESPONSE 👉", res.data);
+const getStoredToken = () => {
+  try {
+    return localStorage.getItem("token") || null;
+  } catch (e) {
+    return null;
+  }
+};
 
-      setIsAuth(res.data.Ispresent);
+const getStoredUser = () => {
+  try {
+    return {
+      name: localStorage.getItem("userName") || "",
+      email: localStorage.getItem("userEmail") || ""
+    };
+  } catch (e) {
+    return { name: "", email: "" };
+  }
+};
 
-      if (res.data.Ispresent) {
-        setUserEmail(res.data.email || "");
-        setUserName(res.data.name || "");
-      }
-    })
-    .catch((err) => {
-      console.log("AUTH ERROR 👉", err);
-      setIsAuth(false);
-      setUserEmail("");
-      setUserName("");
-    })
-    .finally(() => {
-      setAuthLoading(false);
-    });
-}, []);
+const Navbar = (props) => {
+  const storedToken = getStoredToken();
+  const storedUser = getStoredUser();
 
-    const handlelogout= async()=>{
-      try {
-        const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
-        await axios.post(`${backendUrl}/Logout`,{},{withCredentials:true});
-      } catch (err) {
-        console.error("Logout error:", err);
-      } finally {
+  const [IsAuth, setIsAuth] = useState(!!storedToken);
+  const [userEmail, setUserEmail] = useState(storedUser.email);
+  const [userName, setUserName] = useState(storedUser.name);
+  const [authLoading, setAuthLoading] = useState(false);
+
+  useEffect(() => {
+    const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+    axios
+      .get(`${backendUrl}/auth-status`, { withCredentials: true })
+      .then((res) => {
+        setIsAuth(res.data.Ispresent);
+
+        if (res.data.Ispresent) {
+          setUserEmail(res.data.email || "");
+          setUserName(res.data.name || "");
+          if (res.data.name) localStorage.setItem("userName", res.data.name);
+          if (res.data.email) localStorage.setItem("userEmail", res.data.email);
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+        }
+      })
+      .catch((err) => {
+        console.log("AUTH ERROR 👉", err);
+        setIsAuth(false);
+        setUserEmail("");
+        setUserName("");
         localStorage.removeItem("token");
-        window.location.reload();
-      }
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+      })
+      .finally(() => {
+        setAuthLoading(false);
+      });
+  }, []);
+
+  const handlelogout = async () => {
+    try {
+      const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+      await axios.post(`${backendUrl}/Logout`, {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.reload();
     }
+  };
     const initial =
   (userName || userEmail)?.charAt(0)?.toUpperCase() || "U";
     return(
@@ -94,21 +125,35 @@ const Navbar= (props)=>{
           <Link style={props.presentab==="AboutUs"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">About Us</Link>
         </div>
         {authLoading ? (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", minWidth: "120px", height: "40px", paddingRight: "10px" }}>
+          <div className="flex items-center gap-3" style={{ minHeight: "40px" }}>
+            {/* Sleek Skeleton Avatar */}
             <div
               style={{
-                width: "22px",
-                height: "22px",
+                width: "40px",
+                height: "40px",
                 borderRadius: "50%",
-                border: "2px solid rgba(225, 59, 67, 0.2)",
-                borderTopColor: "rgba(225, 59, 67, 1)",
-                animation: "navbarAuthSpin 0.7s linear infinite"
+                background: "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.06) 100%)",
+                backgroundSize: "200% 100%",
+                animation: "navbarSkeletonShimmer 1.5s infinite ease-in-out",
+                border: "1px solid rgba(255, 255, 255, 0.08)"
+              }}
+            />
+            {/* Sleek Skeleton Button */}
+            <div
+              style={{
+                width: "82px",
+                height: "38px",
+                borderRadius: "8px",
+                background: "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.06) 100%)",
+                backgroundSize: "200% 100%",
+                animation: "navbarSkeletonShimmer 1.5s infinite ease-in-out",
+                border: "1px solid rgba(255, 255, 255, 0.08)"
               }}
             />
             <style>{`
-              @keyframes navbarAuthSpin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+              @keyframes navbarSkeletonShimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
               }
             `}</style>
           </div>
