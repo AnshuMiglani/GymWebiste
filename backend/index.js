@@ -9,17 +9,59 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const member = require("./models/formdata");
 require("./db/connection");
-require("dotenv").config();
-const cookieParser= require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 
-const otpStore = {};
+// Trust reverse proxy for HTTPS termination (required on Render)
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
+
+// Robust CORS for Vercel, localhost, and custom domains
+const rawFrontendUrl = process.env.FRONTEND_URL;
+const frontendUrl = rawFrontendUrl ? rawFrontendUrl.trim().replace(/\/$/, "") : null;
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.trim().replace(/\/$/, "");
+    if (
+      !frontendUrl ||
+      cleanOrigin === frontendUrl ||
+      cleanOrigin === "http://localhost:3000" ||
+      cleanOrigin === "http://localhost:3001" ||
+      cleanOrigin === "http://localhost:5173" ||
+      cleanOrigin.endsWith(".vercel.app")
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+// Helper: Extract token from cookie or Authorization header (Bearer token)
+const getToken = (req) => {
+  if (req.cookies && req.cookies.accesstoken) {
+    return req.cookies.accesstoken;
+  }
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+  return null;
+};
+
+// Helper: Secure fallback secret key
+const getSecretKey = () => process.env.SECRET_KEY || "AllahkeBandeHaiHUmAllahKeBandeHaiHum";
+
+const otpStore = {};
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -29,25 +71,43 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
-app.get("/", async(req,res)=>{
-    res.send("backend is Running");
+// Health check / diagnosis route
+app.get("/", async (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.json({
+    status: "ok",
+    message: "FitMaker backend is running",
+    database: isDbConnected ? "connected" : "disconnected (check MongoDB Atlas IP whitelist 0.0.0.0/0)"
+  });
 });
-app.post("/Register", async(req,res)=>{
-    try{
-        const newmem= new member({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-        });
-        const saved =await newmem.save();
-        console.log("hogya");
-        res.status(201).send("done");
+
+app.post("/Register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
     }
-    catch(e){
-    console.log("ERROR 👉", e);
-    res.status(400).send(e.message);
+
+    const existing = await member.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: "Email is already registered. Please login instead." });
     }
+
+    const newmem = new member({
+      name,
+      email,
+      password,
+    });
+    await newmem.save();
+    console.log("Registration successful for:", email);
+    res.status(201).json({ message: "done" });
+  } catch (e) {
+    console.error("ERROR 👉", e);
+    if (e.code === 11000) {
+      return res.status(400).json({ error: "Email is already registered" });
+    }
+    res.status(400).json({ error: e.message || "Registration failed" });
+  }
 });
 
 app.use("/api", require("./routes/ask"));
@@ -354,24 +414,19 @@ app.post("/reset-password", async (req, res) => {
 });
 
 app.post("/send-feedback", async (req, res) => {
-
   try {
-
-    const token =
-      req.cookies.accesstoken;
+    const token = getToken(req);
 
     if (!token) {
-
       return res.status(401).json({
         success: false,
         message: "Login required",
       });
-
     }
 
     const decoded = jwt.verify(
       token,
-      process.env.SECRET_KEY
+      getSecretKey()
     );
 
     const user = await member
@@ -379,23 +434,17 @@ app.post("/send-feedback", async (req, res) => {
       .select("name email");
 
     if (!user) {
-
       return res.status(404).json({
         success: false,
       });
-
     }
 
     const { message } = req.body;
 
     await transporter.sendMail({
-
       from: "MakeFit Feedback",
-
       to: `<${process.env.EMAIL_USER}>`,
-
       subject: "New MakeFit Feedback",
-
       html: `
       <div style="
         background:#0f172a;
@@ -403,7 +452,6 @@ app.post("/send-feedback", async (req, res) => {
         color:white;
         font-family:Arial;
       ">
-
         <h1 style="
           color:#f97316;
         ">
@@ -426,11 +474,8 @@ app.post("/send-feedback", async (req, res) => {
           padding:20px;
           border-radius:12px;
         ">
-
           ${message}
-
         </div>
-
       </div>
       `,
     });
@@ -440,15 +485,11 @@ app.post("/send-feedback", async (req, res) => {
     });
 
   } catch (err) {
-
     console.log(err);
-
     res.status(500).json({
       success: false,
     });
-
   }
-
 });
 
 const verifyToken = (req, res, next) => {
