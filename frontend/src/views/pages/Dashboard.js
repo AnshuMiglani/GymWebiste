@@ -10,8 +10,9 @@ const [user, setUser] = useState(null);
 const [dashboardData, setDashboardData] = useState({});
 
 useEffect(() => {
+  const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
   axios
-    .get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`, { withCredentials: true })
+    .get(`${backendUrl}/auth-status`, { withCredentials: true })
     .then((res) => {
       console.log("AUTH 👉", res.data);
 
@@ -21,7 +22,7 @@ useEffect(() => {
 
         // ✅ ONLY fetch dashboard if logged in
         axios
-          .get(`${process.env.REACT_APP_BACKEND_URL}/dashboard-data`, {
+          .get(`${backendUrl}/dashboard-data`, {
             withCredentials: true,
           })
           .then((res) => {

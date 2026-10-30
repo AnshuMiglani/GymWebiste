@@ -9,8 +9,9 @@ const [userEmail, setUserEmail] = useState("");
 const [userName, setUserName] = useState("");
     
     useEffect(() => {
+  const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
   axios
-    .get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`, { withCredentials: true })
+    .get(`${backendUrl}/auth-status`, { withCredentials: true })
     .then((res) => {
       console.log("AUTH RESPONSE 👉", res.data);
 
@@ -30,8 +31,15 @@ const [userName, setUserName] = useState("");
 }, []);
 
     const handlelogout= async()=>{
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/Logout`,{},{withCredentials:true});
-      window.location.reload();
+      try {
+        const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+        await axios.post(`${backendUrl}/Logout`,{},{withCredentials:true});
+      } catch (err) {
+        console.error("Logout error:", err);
+      } finally {
+        localStorage.removeItem("token");
+        window.location.reload();
+      }
     }
     const initial =
   (userName || userEmail)?.charAt(0)?.toUpperCase() || "U";

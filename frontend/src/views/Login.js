@@ -178,30 +178,46 @@ const resetPassword = async () => {
 
 };
 
-    const finalsubmitlogin=async(e)=>{
-        e.preventDefault();
-        try{
-            const response= await axios.post(`${process.env.REACT_APP_BACKEND_URL}/Login`,currentloginbody,{withCredentials:true});
-            console.log(response);
-            if (response.data === "done") {
-  navigate("/");
-} else {
-  seterrormilgya(true);
-}
-        }
-        catch(e){
-            seterrormilgya(true);
-            console.log("error:",e);
-        }
-    };
+  const finalsubmitlogin = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setLoading(true);
 
+    try {
+      const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+      const response = await axios.post(`${backendUrl}/Login`, currentloginbody, { withCredentials: true });
 
-    return (
-        <div className="fit-maker-website-container">
-        <div className="fit-maker-login-page-navbar">
-        <Navbar/>
-        </div>
-        <div  className='Loginform'>
+      const isSuccess = response.data === "done" || response.data?.message === "done";
+
+      if (isSuccess) {
+        if (response.data?.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        navigate("/");
+      } else {
+        setErrorMessage(response.data?.error || "Invalid username or password");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      const serverMsg = err.response?.data?.error || err.response?.data;
+      if (serverMsg) {
+        setErrorMessage(typeof serverMsg === 'string' ? serverMsg : JSON.stringify(serverMsg));
+      } else if (err.code === "ERR_NETWORK" || err.message?.includes("Network Error")) {
+        setErrorMessage("Cannot connect to server. If Render backend is sleeping (free tier), it may take ~50 seconds to wake up. Please wait and try again.");
+      } else {
+        setErrorMessage("Invalid credentials or server connection issue.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fit-maker-website-container">
+      <div className="fit-maker-login-page-navbar">
+        <Navbar />
+      </div>
+      <div className="Loginform">
         <section>
         
    <div className="signin"> 

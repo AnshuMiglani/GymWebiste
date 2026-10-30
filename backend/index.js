@@ -1,11 +1,13 @@
+require("dotenv").config();
 const express = require("express");
-const app =express();
-const cors= require("cors");
-const path= require("path");
+const app = express();
+const cors = require("cors");
+const path = require("path");
 const port = process.env.PORT || 8000;
-const jwt= require("jsonwebtoken");
-const bcrypt= require("bcryptjs");
-const member= require("./models/formdata");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
+const member = require("./models/formdata");
 require("./db/connection");
 require("dotenv").config();
 const cookieParser= require("cookie-parser");
@@ -48,97 +50,111 @@ app.post("/Register", async(req,res)=>{
     }
 });
 
-
-
 app.use("/api", require("./routes/ask"));
 app.use("/api", require("./routes/mealask"));
 
 app.post("/test", (req, res) => {
   res.send("TEST OK");
 });
-  
+
 app.post("/Login", async (req, res) => {
   try {
-    const current = await member.findOne({ email: req.body.email });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    const current = await member.findOne({ email });
 
     if (!current) {
-      return res.status(400).send("User not found");
+      return res.status(400).json({ error: "User not found with this email" });
     }
 
     const isMatch = await bcrypt.compare(
-      req.body.password,
+      password,
       current.password
     );
 
     if (isMatch) {
       const token = jwt.sign(
-        { userId: current._id },   // ✅ FIXED
-        process.env.SECRET_KEY,
-        { expiresIn: "15m" }
+        { userId: current._id },
+        getSecretKey(),
+        { expiresIn: "7d" }
       );
 
       res.cookie("accesstoken", token, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 15 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).send("done");
+      res.status(200).json({
+        message: "done",
+        token,
+        user: {
+          id: current._id,
+          name: current.name,
+          email: current.email
+        }
+      });
     } else {
-      res.status(400).send("Invalid password");
+      res.status(400).json({ error: "Invalid password" });
     }
   } catch (e) {
-    console.log(e);
-    res.status(500).send("Error");
+    console.error("Login error:", e);
+    res.status(500).json({ error: "Server error during login" });
   }
 });
+
 app.get("/auth-status", async (req, res) => {
-  const token = req.cookies.accesstoken;
+  const token = getToken(req);
 
   if (!token) {
     return res.json({ Ispresent: false });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const decoded = jwt.verify(token, getSecretKey());
 
     const user = await member
       .findById(decoded.userId)
       .select("name email");
+
+    if (!user) {
+      return res.json({ Ispresent: false });
+    }
 
     res.json({
       Ispresent: true,
       name: user.name,
       email: user.email,
     });
-
   } catch (err) {
     res.json({ Ispresent: false });
   }
 });
+
 app.post("/Logout", (req, res) => {
   res.clearCookie("accesstoken", {
     httpOnly: true,
     secure: true,
     sameSite: "none",
   });
-  res.send("done");
+  res.json({ message: "done" });
 });
 
 app.post("/save-dashboard", async (req, res) => {
-  const token = req.cookies.accesstoken;
+  const token = getToken(req);
   if (!token) return res.status(401).send("Not logged in");
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const decoded = jwt.verify(token, getSecretKey());
 
-    // 🔥 Dynamic update (BEST)
     const updateFields = {};
 
     for (let key in req.body) {
       if (key === "macros") {
-        // handle nested macros separately
         for (let macroKey in req.body.macros) {
           updateFields[`dashboard.macros.${macroKey}`] =
             req.body.macros[macroKey];
@@ -158,26 +174,21 @@ app.post("/save-dashboard", async (req, res) => {
     res.status(500).send("Error saving data");
   }
 });
-app.get("/dashboard-data", async (req, res) => {
-  console.log("COOKIE 👉", req.cookies);  // 👈 ADD THIS
 
-  const token = req.cookies.accesstoken;
+app.get("/dashboard-data", async (req, res) => {
+  const token = getToken(req);
 
   if (!token) {
-    console.log("❌ NO TOKEN");
     return res.json({});
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    console.log("✅ USER ID:", decoded.userId);
-
+    const decoded = jwt.verify(token, getSecretKey());
     const user = await member.findById(decoded.userId);
-    console.log("📦 DASHBOARD:", user.dashboard);
 
-    res.json(user.dashboard || {});
+    res.json(user ? (user.dashboard || {}) : {});
   } catch (err) {
-    console.log("❌ JWT ERROR");
+    console.log("❌ JWT ERROR", err);
     res.json({});
   }
 });
@@ -441,15 +452,16 @@ app.post("/send-feedback", async (req, res) => {
 });
 
 const verifyToken = (req, res, next) => {
-    const token = req.cookies.accessToken;
-    if (!token) return res.status(403).json({ message: "Unauthorized" });
+  const token = getToken(req);
+  if (!token) return res.status(403).json({ message: "Unauthorized" });
 
-    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-        if (err) return res.status(401).json({ message: "Invalid token" });
-        req.userId = decoded.userId;
-        next();
-    });
+  jwt.verify(token, getSecretKey(), (err, decoded) => {
+    if (err) return res.status(401).json({ message: "Invalid token" });
+    req.userId = decoded.userId;
+    next();
+  });
 };
-app.listen(port,()=>{
-    console.log(`listening to port no ${port}`);
+
+app.listen(port, () => {
+  console.log(`listening to port no ${port}`);
 });
