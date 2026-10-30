@@ -1,11 +1,9 @@
-import {React,useState,useEffect} from 'react'
-import { Helmet } from 'react-helmet';
+import React, { useState } from 'react';
 import Navbar from './Navbar.js';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './fit-maker-website.css';
 import { Link } from 'react-router-dom';
 import Tools from './pages/Tools.js';
-import axios from 'axios';
 import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
 
 

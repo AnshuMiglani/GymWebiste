@@ -9,7 +9,6 @@ import {
   FaCheckCircle, 
   FaTimesCircle, 
   FaAppleAlt, 
-  FaClock, 
   FaArrowLeft,
   FaRobot,
   FaCalculator
