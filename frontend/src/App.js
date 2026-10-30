@@ -23,6 +23,7 @@ import Meal from './views/pages/Meal';
 import SubscriptionPlans from './views/pages/SubscriptionPlans';
 import Dashboard from './views/pages/Dashboard';
 import Workout from './views/pages/Workout';
+import ProgramDetail from './views/pages/ProgramDetail';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
       <Route path='/macro-calculator' element={<MacronutrientCalculator/>}/>
       <Route path='/weight-calculator' element={<IdealWeightCalculator/>}/>
       <Route path='/unit-converter' element={<UnitConverter/>}/>
+      <Route path='/programs/:programId' element={<ProgramDetail/>}/>
       <Route path='*' element={<NotFound/>}/>
     </Routes>
     </BrowserRouter>

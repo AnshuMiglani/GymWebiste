@@ -238,52 +238,72 @@ const sendFeedback = async (e) => {
     At this part you can easily access all of our services. Take a look at them and chose which ever you want.
   </p>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="relative rounded-xl overflow-hidden shadow-lg group">
-      <img src={require("../external/Frame 314 1.png")} class="w-full h-[400px] object-cover" alt="Losing Weight"/>
-      <div class="absolute inset-0 bg-black/20 group-hover:bg-opacity-80 transition-all p-6 flex flex-col justify-end text-left">
-        <h3 class="text-red-600 text-lg font-extrabold uppercase">Losing Weight</h3>
-        <p class="text-sm text-white font-medium mb-2">Click to join our losing weight plans</p>
-        <p class="text-xs text-gray-300 mb-3">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {/* Card 1: Losing Weight */}
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-zinc-800 hover:border-red-600/50 transition-all duration-300 hover:-translate-y-1">
+      <img src={require("../external/Frame 314 1.png")} className="w-full h-[420px] object-cover scale-105 group-hover:scale-110 transition duration-500" alt="Losing Weight"/>
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/60 p-6 flex flex-col justify-end text-left transition-all duration-300">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-red-500 bg-red-950/60 border border-red-800/40 px-2.5 py-0.5 rounded-full w-fit mb-2">Program 01</span>
+        <h3 className="text-red-500 text-xl font-extrabold uppercase tracking-tight">Losing Weight</h3>
+        <p className="text-sm text-white font-medium mb-2">Click to join our losing weight plans</p>
+        <p className="text-xs text-gray-300 leading-relaxed mb-4">
           Achieve sustainable weight loss with our customized programs designed to help you burn fat and build a healthy, leaner body.
         </p>
-        <a href="/" class="text-sm text-white hover:text-red-400 underline underline-offset-4">Learn More →</a>
+        <Link to="/programs/losing-weight" className="inline-flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-400 transition group/btn w-fit">
+          <span>Learn More</span>
+          <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+        </Link>
       </div>
     </div>
 
-    <div class="relative rounded-xl overflow-hidden shadow-lg group">
-      <img src={require("../external/Frame 314 2.png")} class="w-full h-[400px] object-cover" alt="Building Muscle"/>
-      <div class="absolute inset-0 bg-black/20 group-hover:bg-opacity-80 transition-all p-6 flex flex-col justify-end text-left">
-        <h3 class="text-red-600 text-lg font-extrabold uppercase">Building Muscle</h3>
-        <p class="text-sm text-white font-medium mb-2">Click to join our building muscle plans</p>
-        <p class="text-xs text-gray-300 mb-3">
+    {/* Card 2: Building Muscle */}
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-zinc-800 hover:border-red-600/50 transition-all duration-300 hover:-translate-y-1">
+      <img src={require("../external/Frame 314 2.png")} className="w-full h-[420px] object-cover scale-105 group-hover:scale-110 transition duration-500" alt="Building Muscle"/>
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/60 p-6 flex flex-col justify-end text-left transition-all duration-300">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-red-500 bg-red-950/60 border border-red-800/40 px-2.5 py-0.5 rounded-full w-fit mb-2">Program 02</span>
+        <h3 className="text-red-500 text-xl font-extrabold uppercase tracking-tight">Building Muscle</h3>
+        <p className="text-sm text-white font-medium mb-2">Click to join our building muscle plans</p>
+        <p className="text-xs text-gray-300 leading-relaxed mb-4">
           Build strength and define your muscles with tailored programs. Gain lean mass and track your growth efficiently.
         </p>
-        <a href="/" class="text-sm text-white hover:text-red-400 underline underline-offset-4">Learn More →</a>
+        <Link to="/programs/building-muscle" className="inline-flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-400 transition group/btn w-fit">
+          <span>Learn More</span>
+          <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+        </Link>
       </div>
     </div>
 
-    <div class="relative rounded-xl overflow-hidden shadow-lg group">
-      <img src={require("../external/Frame 314 3.png")} class="w-full h-[400px] object-cover" alt="Training in Home"/>
-      <div class="absolute inset-0 bg-black/20 group-hover:bg-opacity-80 transition-all p-6 flex flex-col justify-end text-left">
-        <h3 class="text-red-600 text-lg font-extrabold uppercase">Training In Home</h3>
-        <p class="text-sm text-white font-medium mb-2">Click to see our ultimate home plans</p>
-        <p class="text-xs text-gray-300 mb-3">
+    {/* Card 3: Training In Home */}
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-zinc-800 hover:border-red-600/50 transition-all duration-300 hover:-translate-y-1">
+      <img src={require("../external/Frame 314 3.png")} className="w-full h-[420px] object-cover scale-105 group-hover:scale-110 transition duration-500" alt="Training in Home"/>
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/60 p-6 flex flex-col justify-end text-left transition-all duration-300">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-red-500 bg-red-950/60 border border-red-800/40 px-2.5 py-0.5 rounded-full w-fit mb-2">Program 03</span>
+        <h3 className="text-red-500 text-xl font-extrabold uppercase tracking-tight">Training In Home</h3>
+        <p className="text-sm text-white font-medium mb-2">Click to see our ultimate home plans</p>
+        <p className="text-xs text-gray-300 leading-relaxed mb-4">
           Train from home with effective routines. Minimal equipment, maximum results. Stay consistent and strong.
         </p>
-        <a href="/" class="text-sm text-white hover:text-red-400 underline underline-offset-4">Learn More →</a>
+        <Link to="/programs/training-in-home" className="inline-flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-400 transition group/btn w-fit">
+          <span>Learn More</span>
+          <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+        </Link>
       </div>
     </div>
 
-    <div class="relative rounded-xl overflow-hidden shadow-lg group">
-      <img src={require("../external/Frame 314 4.png")} class="w-full h-[400px] object-cover" alt="Gym Plan"/>
-      <div class="absolute inset-0 bg-black/20 group-hover:bg-opacity-80 transition-all p-6 flex flex-col justify-end text-left">
-        <h3 class="text-red-600 text-lg font-extrabold uppercase">Gym Plan</h3>
-        <p class="text-sm text-white font-medium mb-2">Click, enter your details, get your plan</p>
-        <p class="text-xs text-gray-300 mb-3">
+    {/* Card 4: Gym Plan */}
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-zinc-800 hover:border-red-600/50 transition-all duration-300 hover:-translate-y-1">
+      <img src={require("../external/Frame 314 4.png")} className="w-full h-[420px] object-cover scale-105 group-hover:scale-110 transition duration-500" alt="Gym Plan"/>
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/60 p-6 flex flex-col justify-end text-left transition-all duration-300">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-red-500 bg-red-950/60 border border-red-800/40 px-2.5 py-0.5 rounded-full w-fit mb-2">Program 04</span>
+        <h3 className="text-red-500 text-xl font-extrabold uppercase tracking-tight">Gym Plan</h3>
+        <p className="text-sm text-white font-medium mb-2">Click, enter your details, get your plan</p>
+        <p className="text-xs text-gray-300 leading-relaxed mb-4">
           Get a custom gym plan with structured workouts and proper guidance toward your fitness goals.
         </p>
-        <a href="/" class="text-sm text-white hover:text-red-400 underline underline-offset-4">Learn More →</a>
+        <Link to="/programs/gym-plan" className="inline-flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-400 transition group/btn w-fit">
+          <span>Learn More</span>
+          <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+        </Link>
       </div>
     </div>
   </div>

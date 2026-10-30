@@ -5,8 +5,9 @@ import axios from 'axios';
 
 const Navbar= (props)=>{
     const [IsAuth, setIsAuth] = useState(false);
-const [userEmail, setUserEmail] = useState("");
-const [userName, setUserName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const [userName, setUserName] = useState("");
+    const [authLoading, setAuthLoading] = useState(true);
     
     useEffect(() => {
   const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
@@ -27,6 +28,9 @@ const [userName, setUserName] = useState("");
       setIsAuth(false);
       setUserEmail("");
       setUserName("");
+    })
+    .finally(() => {
+      setAuthLoading(false);
     });
 }, []);
 
@@ -72,6 +76,11 @@ const [userName, setUserName] = useState("");
             Programs
             </button>
             <ul  className="dropdown-menu" >
+            <li><Link className="dropdown-item" to="/programs/losing-weight">Losing Weight</Link></li>
+            <li><Link className="dropdown-item" to="/programs/building-muscle">Building Muscle</Link></li>
+            <li><Link className="dropdown-item" to="/programs/training-in-home">Training In Home</Link></li>
+            <li><Link className="dropdown-item" to="/programs/gym-plan">Gym Plan</Link></li>
+            <li><hr className="dropdown-divider my-1 border-zinc-700" /></li>
             <li><Link className="dropdown-item" to="/meal-planner">Meal Planner</Link></li>
             <li><Link className="dropdown-item" to="/workouts">Workouts</Link></li>
             <li><Link className="dropdown-item" to="/plans">View Plans</Link></li>
@@ -84,31 +93,50 @@ const [userName, setUserName] = useState("");
             Tutorials</Link>
           <Link style={props.presentab==="AboutUs"? {borderBottom:"2px",borderColor:"rgba(225, 59, 67, 1)",borderBottomStyle:"solid", paddingBottom:"4px",paddingTop:"3px"}:{paddingBottom:"2px"}} to="/">About Us</Link>
         </div>
-        {IsAuth? (<div className="flex items-center gap-3">
-  
-  {/* Avatar */}
-  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:scale-105 transition duration-200 shadow-lg shadow-red-500/30">
-    {initial}
-  </div>
+        {authLoading ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", minWidth: "120px", height: "40px", paddingRight: "10px" }}>
+            <div
+              style={{
+                width: "22px",
+                height: "22px",
+                borderRadius: "50%",
+                border: "2px solid rgba(225, 59, 67, 0.2)",
+                borderTopColor: "rgba(225, 59, 67, 1)",
+                animation: "navbarAuthSpin 0.7s linear infinite"
+              }}
+            />
+            <style>{`
+              @keyframes navbarAuthSpin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}</style>
+          </div>
+        ) : IsAuth ? (
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:scale-105 transition duration-200 shadow-lg shadow-red-500/30">
+              {initial}
+            </div>
 
-  {/* Logout Button */}
-  <button
-    onClick={handlelogout}
-    className="px-4 py-2 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-200 text-sm font-medium"
-  >
-    Logout
-  </button>
-
-</div>):(
+            {/* Logout Button */}
+            <button
+              onClick={handlelogout}
+              className="px-4 py-2 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-200 text-sm font-medium"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
           <div className="fit-maker-website-frame290">
-          <Link to="/Login"><button className="fit-maker-website-button10">
-            <span className="fit-maker-website-text109">Login</span>
-          </button></Link>
-          <Link to="/Register"><button className="fit-maker-website-button11" >
-            <span style={{ fontFamily:"Vazirmatn",
-  fontWeight: "300",fontSize:"14px",fontStyle:"Light"}}>Sign Up</span>
-          </button></Link>
-        </div>
+            <Link to="/Login"><button className="fit-maker-website-button10">
+              <span className="fit-maker-website-text109">Login</span>
+            </button></Link>
+            <Link to="/Register"><button className="fit-maker-website-button11" >
+              <span style={{ fontFamily:"Vazirmatn",
+    fontWeight: "300",fontSize:"14px",fontStyle:"Light"}}>Sign Up</span>
+            </button></Link>
+          </div>
         )}
       </div> 
     );

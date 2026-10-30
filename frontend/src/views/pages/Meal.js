@@ -23,8 +23,9 @@ const Meal = () => {
       setLoading(true);
       setError("");
 
+      const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/meal-planner`,
+        `${backendUrl}/api/meal-planner`,
         form
       );
 

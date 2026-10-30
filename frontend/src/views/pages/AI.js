@@ -1,106 +1,112 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../BodyMap.css";
 import LoginPromptModal from '../LoginPromptModal.js';
 import "../LoginPromptModal.css";
 import axios from "axios";
+
 export default function GeminiChat() {
   const [prompt, setPrompt] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { sender: "ai", text: "Hello! I am FitBot, your AI fitness coach. Ask me anything about workouts, diet, macros, or gym exercises!" }
+  ]);
   const [loading, setLoading] = useState(false);
+  const [showModal, setshowModal] = useState(false);
+
+  const backendUrl = (process.env.REACT_APP_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
+
+  useEffect(() => {
+    axios.get(`${backendUrl}/auth-status`, { withCredentials: true })
+      .then((res) => {
+        if (res.data.Ispresent) {
+          setshowModal(false);
+        } else {
+          setshowModal(true);
+        }
+      })
+      .catch(() => {
+        setshowModal(true);
+      });
+  }, [backendUrl]);
 
   const askGemini = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim() || loading) return;
 
-    const userMessage = { sender: "user", text: prompt };
+    const userMessage = { sender: "user", text: prompt.trim() };
     setMessages((prev) => [...prev, userMessage]);
+    const currentPrompt = prompt.trim();
     setPrompt("");
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/ask`,{
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-
-      const data = await res.json();
-      const aiText = data?.reply || "No response.";
-      const plainText = aiText.replace(/\*\*/g, '').replace(/\*/g, '');
+      const res = await axios.post(`${backendUrl}/api/ask`, { prompt: currentPrompt });
+      const aiText = res.data?.reply || res.data?.error || "No response received.";
+      const plainText = typeof aiText === "string" ? aiText.replace(/\*\*/g, '').replace(/\*/g, '') : JSON.stringify(aiText);
       const aiMessage = { sender: "ai", text: plainText };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
-      console.error(err);
+      console.error("FitBot error:", err);
+      const errMsg = err.response?.data?.error || err.message || "Unable to reach FitBot. Please check your backend connection.";
       setMessages((prev) => [
         ...prev,
-        { sender: "ai", text: "❌ Error fetching response." },
+        { sender: "ai", text: `❌ ${errMsg}` },
       ]);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-    const [showModal,setshowModal]= useState(false);
-    useEffect(()=>{
-      axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth-status`,{withCredentials:true})
-      .then((res) => {
-        if(res.data.Ispresent){
-            setshowModal(false);
-        }
-        else{
-            setshowModal(true);
-        }
-      })
-      .catch(()=>{setshowModal(true)});
-    },[]);
   return (
-    <div className="flex items-center justify-center p-2">
-      <div className="w-[650px] h-[620px] bg-[#111] text-white flex flex-col border border-white rounded-2xl shadow-lg overflow-hidden">
+    <div className="flex items-center justify-center p-2 min-h-screen bg-black/90">
+      <div className="w-[650px] h-[620px] bg-[#111] text-white flex flex-col border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-red-600 px-4 py-3 font-semibold text-lg flex justify-between">
-          💪 FitBot AI Chat
-          <Link to="/"><p>x</p></Link>
+        <div className="bg-red-600 px-5 py-4 font-bold text-lg flex justify-between items-center shadow-md">
+          <span>💪 FitBot AI Coach</span>
+          <Link to="/" className="text-white hover:text-gray-200 text-xl font-bold px-2">✕</Link>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 your-message-container">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 your-message-container">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`max-w-[75%] px-4 py-2 rounded-xl whitespace-pre-wrap ${
+              className={`max-w-[80%] px-4 py-2.5 rounded-2xl whitespace-pre-wrap leading-relaxed text-sm ${
                 msg.sender === "user"
-                  ? "bg-red-600 text-white ml-auto"
-                  : "bg-gray-700 text-white mr-auto"
+                  ? "bg-red-600 text-white ml-auto rounded-tr-none shadow"
+                  : "bg-zinc-800 text-gray-100 mr-auto rounded-tl-none border border-zinc-700 shadow"
               }`}
             >
               {msg.text}
             </div>
           ))}
           {loading && (
-            <div className="bg-gray-600 text-white px-4 py-2 rounded-xl max-w-[60%] mr-auto">
-              Thinking...
+            <div className="bg-zinc-800 text-gray-300 px-4 py-2.5 rounded-2xl max-w-[60%] mr-auto rounded-tl-none border border-zinc-700 text-sm flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              FitBot is analyzing...
             </div>
           )}
         </div>
 
         {/* Input Area */}
-        <div className="bg-[#1a1a1a] px-4 py-3 border-t border-gray-700">
+        <div className="bg-[#18181b] px-4 py-3.5 border-t border-zinc-800">
           <div className="flex gap-2">
             <input
               type="text"
-              className="flex-1 p-2 rounded-lg text-black"
-              placeholder="Type your message..."
+              className="flex-1 p-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
+              placeholder="Ask about workouts, diet, protein, calorie deficit..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && askGemini()}
+              disabled={loading}
             />
             <button
               type="button"
               onClick={askGemini}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 active:scale-95 transition text-white font-medium px-5 py-2.5 rounded-xl text-sm disabled:opacity-50"
             >
-              Ask
+              Send
             </button>
           </div>
         </div>

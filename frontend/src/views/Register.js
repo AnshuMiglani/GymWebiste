@@ -4,12 +4,15 @@ import './fit-maker-website.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Register.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Register = (props) => {
   const [currentbody, setcurrentbody] = useState({ name: "", email: "", password: "", cpassword: "" });
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCPassword, setShowCPassword] = useState(false);
 
   const changevalues = (e) => {
     setErrorMessage("");
@@ -91,27 +94,73 @@ const Register = (props) => {
                 required
               />
             </div>
-            <div className="input-box">
+            <div className="input-box" style={{ position: "relative" }}>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={currentbody.password}
                 onChange={changevalues}
                 placeholder="Create password"
+                style={{ paddingRight: "42px" }}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
+                  border: "none",
+                  color: "#aaa",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "4px",
+                  zIndex: 5
+                }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={17} /> : <FaEye size={17} />}
+              </button>
             </div>
-            <div className="input-box">
+            <div className="input-box" style={{ position: "relative" }}>
               <input
                 id="cpassword"
-                type="password"
+                type={showCPassword ? "text" : "password"}
                 name="cpassword"
                 value={currentbody.cpassword}
                 onChange={changevalues}
                 placeholder="Confirm password"
+                style={{ paddingRight: "42px" }}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowCPassword(!showCPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
+                  border: "none",
+                  color: "#aaa",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "4px",
+                  zIndex: 5
+                }}
+                aria-label={showCPassword ? "Hide password" : "Show password"}
+              >
+                {showCPassword ? <FaEyeSlash size={17} /> : <FaEye size={17} />}
+              </button>
             </div>
             {errorMessage && (
               <p style={{ color: "#ff4d4f", fontWeight: "600", fontSize: "14px", marginTop: "8px", textAlign: "center" }}>

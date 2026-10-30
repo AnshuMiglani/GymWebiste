@@ -4,12 +4,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import './fit-maker-website.css';
 import axios from 'axios';
 import './Login.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = (props) => {
   const [currentloginbody, setcurrentloginbody] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   const changelogin = (e) => {
     setErrorMessage("");
@@ -168,16 +171,39 @@ const Login = (props) => {
                     <i>Email</i>
                   </div>
 
-                  <div className="inputBox">
+                  <div className="inputBox" style={{ position: "relative" }}>
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={currentloginbody.password}
                       onChange={changelogin}
+                      style={{ paddingRight: "42px" }}
                       required
                     />
                     <i>Password</i>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: "absolute",
+                        right: "12px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "transparent",
+                        border: "none",
+                        color: "#aaa",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "4px",
+                        zIndex: 5
+                      }}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <FaEyeSlash size={17} /> : <FaEye size={17} />}
+                    </button>
                   </div>
 
                   {errorMessage && (
@@ -275,21 +301,45 @@ const Login = (props) => {
 
                   {otpVerified && (
                     <>
-                      <div className="inputBox">
+                      <div className="inputBox" style={{ position: "relative" }}>
                         <input
-                          type="password"
+                          type={showResetPassword ? "text" : "password"}
                           placeholder="New Password"
                           className={passwordError ? "errorBorder" : ""}
                           onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
+                          style={{ paddingRight: "42px" }}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowResetPassword(!showResetPassword)}
+                          style={{
+                            position: "absolute",
+                            right: "12px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            background: "transparent",
+                            border: "none",
+                            color: "#aaa",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "4px",
+                            zIndex: 5
+                          }}
+                          aria-label={showResetPassword ? "Hide password" : "Show password"}
+                        >
+                          {showResetPassword ? <FaEyeSlash size={17} /> : <FaEye size={17} />}
+                        </button>
                       </div>
 
-                      <div className="inputBox">
+                      <div className="inputBox" style={{ position: "relative" }}>
                         <input
-                          type="password"
+                          type={showResetPassword ? "text" : "password"}
                           placeholder="Confirm Password"
                           className={passwordError ? "errorBorder" : ""}
                           onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                          style={{ paddingRight: "42px" }}
                         />
                       </div>
 
