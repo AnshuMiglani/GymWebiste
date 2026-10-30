@@ -87,8 +87,11 @@
   overflow-y: auto;
   scrollbar-color: #ffffff44 transparent;
   scrollbar-width: thin;
-  padding: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  background: rgba(10, 15, 29, 0.35);
+  backdrop-filter: blur(8px);
 }
 .video-section::-webkit-scrollbar {
   width: 8px;
