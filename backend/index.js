@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const member = require("./models/formdata");
+const Feedback = require("./models/feedback");
 require("./db/connection");
 const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
@@ -65,11 +66,31 @@ const otpStore = {};
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
+
+// Verify email configuration at startup
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  transporter.verify((error) => {
+    if (error) {
+      console.warn("⚠️ [Nodemailer] Gmail SMTP connection failed:", error.message);
+      console.warn("👉 Tip: Use a 16-character Google App Password in EMAIL_PASS (not your normal Gmail password).");
+    } else {
+      console.log("✅ [Nodemailer] Connected to Gmail SMTP successfully.");
+    }
+  });
+} else {
+  console.log("ℹ️ [Nodemailer] EMAIL_USER or EMAIL_PASS not set in backend/.env. Mail sending will run in dev/fallback mode.");
+}
 
 // Health check / diagnosis route
 app.get("/", async (req, res) => {
@@ -257,6 +278,13 @@ app.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
     const user = await member.findOne({ email });
 
     if (!user) {
@@ -276,56 +304,68 @@ app.post("/send-otp", async (req, res) => {
       expires: Date.now() + 3 * 60 * 1000, // 3 mins
     };
 
-    await transporter.sendMail({
-      from: `"MakeFit Support" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "MakeFit Password Reset OTP",
-      html: `
-      <div style="
-        background:#0f172a;
-        padding:30px;
-        color:white;
-        font-family:Arial;
-      ">
-        <h1 style="color:#f97316">
-          MakeFit
-        </h1>
-
-        <p>Password Reset OTP</p>
-
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      await transporter.sendMail({
+        from: `"MakeFit Support" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "MakeFit Password Reset OTP",
+        html: `
         <div style="
-          background:#1e293b;
-          padding:20px;
-          border-radius:10px;
-          text-align:center;
-          margin-top:20px;
+          background:#0f172a;
+          padding:30px;
+          color:white;
+          font-family:Arial;
         ">
-          <h2 style="
-            color:#f97316;
-            letter-spacing:8px;
+          <h1 style="color:#f97316">
+            MakeFit
+          </h1>
+
+          <p>Password Reset OTP</p>
+
+          <div style="
+            background:#1e293b;
+            padding:20px;
+            border-radius:10px;
+            text-align:center;
+            margin-top:20px;
           ">
-            ${otp}
-          </h2>
+            <h2 style="
+              color:#f97316;
+              letter-spacing:8px;
+            ">
+              ${otp}
+            </h2>
+          </div>
+
+          <p style="margin-top:20px;color:#94a3b8">
+            OTP valid for 3 minutes.
+          </p>
         </div>
+        `,
+      });
 
-        <p style="margin-top:20px;color:#94a3b8">
-          OTP valid for 3 minutes.
-        </p>
-      </div>
-      `,
-    });
+      res.json({
+        success: true,
+        message: "OTP sent to your email",
+      });
+    } else {
+      console.log(`\n======================================================`);
+      console.log(`🔑 [PASSWORD RESET OTP] For ${email}: ${otp}`);
+      console.log(`ℹ️ [Notice] Set EMAIL_USER & EMAIL_PASS in backend/.env to deliver live emails.`);
+      console.log(`======================================================\n`);
 
-    res.json({
-      success: true,
-      message: "OTP sent",
-    });
+      res.json({
+        success: true,
+        message: "OTP generated (Dev Mode: Check backend console or configure EMAIL_USER/PASS)",
+      });
+    }
 
   } catch (err) {
-    console.log(err);
+    console.error("Error in /send-otp:", err);
 
     res.status(500).json({
       success: false,
-      message: "Failed to send OTP",
+      message: err.message || "Failed to send OTP",
     });
   }
 });
@@ -420,14 +460,19 @@ app.post("/send-feedback", async (req, res) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Login required",
+        message: "Login required to share feedback.",
       });
     }
 
-    const decoded = jwt.verify(
-      token,
-      getSecretKey()
-    );
+    let decoded;
+    try {
+      decoded = jwt.verify(token, getSecretKey());
+    } catch (jwtErr) {
+      return res.status(401).json({
+        success: false,
+        message: "Session expired or invalid. Please log in again.",
+      });
+    }
 
     const user = await member
       .findById(decoded.userId)
@@ -436,58 +481,96 @@ app.post("/send-feedback", async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
+        message: "User account not found.",
       });
     }
 
     const { message } = req.body;
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a feedback message.",
+      });
+    }
 
-    await transporter.sendMail({
-      from: "MakeFit Feedback",
-      to: `<${process.env.EMAIL_USER}>`,
-      subject: "New MakeFit Feedback",
-      html: `
-      <div style="
-        background:#0f172a;
-        padding:30px;
-        color:white;
-        font-family:Arial;
-      ">
-        <h1 style="
-          color:#f97316;
-        ">
-          New Feedback Received
-        </h1>
+    // 1. Always save feedback to database first so feedback is never lost
+    try {
+      await Feedback.create({
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        message: message.trim(),
+      });
+    } catch (dbErr) {
+      console.error("Failed to save feedback to database:", dbErr);
+    }
 
-        <p>
-          <strong>Name:</strong>
-          ${user.name}
-        </p>
+    // 2. Forward to email via Nodemailer if SMTP is configured
+    const recipientEmail = process.env.FEEDBACK_RECIPIENT || process.env.EMAIL_USER || "MakeFitAll@Gmail.Com";
+    const senderEmail = process.env.EMAIL_USER;
 
-        <p>
-          <strong>Email:</strong>
-          ${user.email}
-        </p>
+    if (senderEmail && process.env.EMAIL_PASS) {
+      try {
+        await transporter.sendMail({
+          from: `"MakeFit Feedback" <${senderEmail}>`,
+          to: recipientEmail,
+          replyTo: user.email,
+          subject: `New MakeFit Feedback from ${user.name}`,
+          html: `
+          <div style="
+            background:#0f172a;
+            padding:30px;
+            color:white;
+            font-family:Arial,sans-serif;
+            border-radius:8px;
+          ">
+            <h1 style="color:#f97316;margin-top:0;">
+              New Feedback Received
+            </h1>
 
-        <div style="
-          margin-top:20px;
-          background:#1e293b;
-          padding:20px;
-          border-radius:12px;
-        ">
-          ${message}
-        </div>
-      </div>
-      `,
-    });
+            <p style="margin:6px 0;">
+              <strong>Name:</strong> ${user.name}
+            </p>
+
+            <p style="margin:6px 0;">
+              <strong>Email:</strong> ${user.email}
+            </p>
+
+            <div style="
+              margin-top:20px;
+              background:#1e293b;
+              padding:20px;
+              border-radius:12px;
+              white-space:pre-wrap;
+              color:#f8fafc;
+            ">
+              ${message.trim()}
+            </div>
+          </div>
+          `,
+        });
+      } catch (mailErr) {
+        console.error("Nodemailer error sending feedback email:", mailErr.message);
+      }
+    } else {
+      console.log(`\n======================================================`);
+      console.log(`📝 [NEW FEEDBACK SAVED]`);
+      console.log(`User: ${user.name} (${user.email})`);
+      console.log(`Message: "${message.trim()}"`);
+      console.log(`ℹ️ [Notice] Set EMAIL_USER & EMAIL_PASS in backend/.env to forward copy via Gmail.`);
+      console.log(`======================================================\n`);
+    }
 
     res.json({
       success: true,
+      message: "Thank you for your feedback ❤️",
     });
 
   } catch (err) {
-    console.log(err);
+    console.error("Error in /send-feedback:", err);
     res.status(500).json({
       success: false,
+      message: "Server error while submitting feedback.",
     });
   }
 });

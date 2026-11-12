@@ -39,22 +39,23 @@ const FitMakerWebsite = (props) => {
   const [feedbackMessage, setFeedbackMessage] =
   useState("");
 
-const [currentUser, setCurrentUser] =
-  useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const token = localStorage.getItem("token");
+    const name = localStorage.getItem("userName");
+    const email = localStorage.getItem("userEmail");
+    if (token && name) {
+      return { name, email: email || "" };
+    }
+    return null;
+  });
 
-const [feedbackError, setFeedbackError] =
-  useState("");
-
-const [feedbackLoading, setFeedbackLoading] =
-  useState(false);
-
-const [feedbackSuccess, setFeedbackSuccess] =
-  useState(false);
+  const [feedbackError, setFeedbackError] = useState("");
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackSuccess, setFeedbackSuccess] = useState(false);
 
   const toggleFAQ = (index) => {
     setActiveIndex((prev) => (prev === index ? null : index));
   };
-
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -84,7 +85,8 @@ const [feedbackSuccess, setFeedbackSuccess] =
   const sendFeedback = async (e) => {
     e.preventDefault();
 
-    if (!currentUser) {
+    const storedToken = localStorage.getItem("token");
+    if (!currentUser && !storedToken) {
       setFeedbackError("Please login to share feedback.");
       return;
     }
@@ -107,7 +109,7 @@ const [feedbackSuccess, setFeedbackSuccess] =
       setFeedbackSuccess(true);
       setFeedbackMessage("");
     } catch (err) {
-      setFeedbackError("Failed to send feedback.");
+      setFeedbackError(err.response?.data?.message || "Failed to send feedback.");
     } finally {
       setFeedbackLoading(false);
     }
