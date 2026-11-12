@@ -64,22 +64,19 @@ const getSecretKey = () => process.env.SECRET_KEY || "AllahkeBandeHaiHUmAllahKeB
 
 const otpStore = {};
 
+const emailUser = (process.env.EMAIL_USER || "").trim();
+const emailPass = (process.env.EMAIL_PASS || "").replace(/\s+/g, "");
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
+    user: emailUser,
+    pass: emailPass,
   },
 });
 
 // Verify email configuration at startup
-if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+if (emailUser && emailPass) {
   transporter.verify((error) => {
     if (error) {
       console.warn("⚠️ [Nodemailer] Gmail SMTP connection failed:", error.message);
@@ -304,9 +301,9 @@ app.post("/send-otp", async (req, res) => {
       expires: Date.now() + 3 * 60 * 1000, // 3 mins
     };
 
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (emailUser && emailPass) {
       await transporter.sendMail({
-        from: `"MakeFit Support" <${process.env.EMAIL_USER}>`,
+        from: `"MakeFit Support" <${emailUser}>`,
         to: email,
         subject: "MakeFit Password Reset OTP",
         html: `
@@ -506,13 +503,12 @@ app.post("/send-feedback", async (req, res) => {
     }
 
     // 2. Forward to email via Nodemailer if SMTP is configured
-    const recipientEmail = process.env.FEEDBACK_RECIPIENT || process.env.EMAIL_USER || "MakeFitAll@Gmail.Com";
-    const senderEmail = process.env.EMAIL_USER;
+    const recipientEmail = (process.env.FEEDBACK_RECIPIENT || emailUser || "MakeFitAll@Gmail.Com").trim();
 
-    if (senderEmail && process.env.EMAIL_PASS) {
+    if (emailUser && emailPass) {
       try {
-        await transporter.sendMail({
-          from: `"MakeFit Feedback" <${senderEmail}>`,
+        const mailInfo = await transporter.sendMail({
+          from: `"MakeFit Feedback" <${emailUser}>`,
           to: recipientEmail,
           replyTo: user.email,
           subject: `New MakeFit Feedback from ${user.name}`,
@@ -549,8 +545,9 @@ app.post("/send-feedback", async (req, res) => {
           </div>
           `,
         });
+        console.log(`✅ [Nodemailer] Feedback email sent to ${recipientEmail} (ID: ${mailInfo.messageId})`);
       } catch (mailErr) {
-        console.error("Nodemailer error sending feedback email:", mailErr.message);
+        console.error("❌ [Nodemailer] Error sending feedback email:", mailErr.message);
       }
     } else {
       console.log(`\n======================================================`);
